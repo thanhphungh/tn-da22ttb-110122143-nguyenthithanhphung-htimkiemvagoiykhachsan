@@ -12,6 +12,10 @@ backend/uploads/avatars/*
 .DS_Store
 Thumbs.db
 
+# Office temp files
+~$*
+~WRL*.tmp
+
 # Logs
 *.log
 npm-debug.log*
