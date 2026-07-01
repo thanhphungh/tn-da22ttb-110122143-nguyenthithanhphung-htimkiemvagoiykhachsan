@@ -1,0 +1,161 @@
+/* ── Admin Page Styles ─────────────────────────────────── */
+* { box-sizing: border-box; }
+
+.admin-section {
+  padding: 32px 16px;
+  font-family: system-ui, Segoe UI, Roboto, Arial, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: calc(100vh - 70px);
+}
+
+.container {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.08);
+  padding: 24px;
+}
+
+/* ── Tabs ─────────────────────────────────────────────── */
+.admin-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  border: 2px solid #e0e0e0;
+  background: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  color: #555;
+}
+.tab-btn:hover { border-color: #2196F3; color: #2196F3; }
+.tab-btn.active { background: #2196F3; color: #fff; border-color: #2196F3; }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ── Stats Grid ───────────────────────────────────────── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.stat-box {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 24px 16px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,.12);
+}
+.stat-box h3 { font-size: 28px; margin: 0 0 6px; }
+.stat-box p  { font-size: 13px; margin: 0; opacity: 0.9; }
+.stat-box:nth-child(2) { background: linear-gradient(135deg, #f093fb, #f5576c); }
+.stat-box:nth-child(3) { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+.stat-box:nth-child(4) { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+.stat-box:nth-child(5) { background: linear-gradient(135deg, #fa709a, #fee140); }
+
+/* ── Tables ───────────────────────────────────────────── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+table th {
+  padding: 12px 10px;
+  text-align: left;
+  background: #f5f5f5;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #e0e0e0;
+}
+table td {
+  padding: 10px;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+}
+table tr:hover { background: #fafafa; }
+
+/* ── Status badges ────────────────────────────────────── */
+.success  { background: #e8f5e9; color: #2e7d32; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+.pending  { background: #fff8e1; color: #f57f17; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+.cancelled{ background: #ffebee; color: #c62828; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+
+/* ── Buttons ──────────────────────────────────────────── */
+.btn-primary {
+  background: #2196F3;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+.btn-primary:hover { background: #1976D2; }
+
+.btn-secondary {
+  background: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+.btn-secondary:hover { background: #e0e0e0; }
+
+/* ── Hotel Form ───────────────────────────────────────── */
+#hotelForm label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #555;
+}
+#hotelForm input,
+#hotelForm select,
+#hotelForm textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+#hotelForm input:focus,
+#hotelForm select:focus,
+#hotelForm textarea:focus {
+  border-color: #2196F3;
+}
+
+/* ── Header override for admin ─────────────────────────── */
+.header {
+  background: #1a237e;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+}
+.header .logo { display: flex; align-items: center; gap: 10px; color: white; }
+.header .logo h1 { margin: 0; font-size: 20px; }
+.header .logo-icon { background: #2196F3; color: white; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+.header .navbar a { color: rgba(255,255,255,0.85); text-decoration: none; margin-left: 20px; font-size: 14px; }
+.header .navbar a:hover { color: white; }

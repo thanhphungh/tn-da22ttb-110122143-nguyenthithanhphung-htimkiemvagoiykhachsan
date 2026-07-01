@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý Khách Sạn - VinhLong</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    body { background:#f5f5f5; }
+    .owner-wrap { max-width:1100px; margin:0 auto; padding:24px 16px; }
+    .banner { background:linear-gradient(135deg,#8b5e3c,#5d3a1a); color:#fff; border-radius:14px; padding:20px 28px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+    .banner h2 { margin:0 0 4px; font-size:20px; }
+    .banner p  { margin:0; opacity:0.85; font-size:13px; }
+    .badge-ok  { background:#c8e6c9; color:#1b5e20; padding:5px 14px; border-radius:20px; font-size:13px; font-weight:700; }
+    .badge-no  { background:#fff3cd; color:#856404; padding:5px 14px; border-radius:20px; font-size:13px; font-weight:700; }
+    .hotel-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+    .htab { padding:8px 18px; border:2px solid #8b5e3c; border-radius:8px; background:#fff; color:#8b5e3c; font-size:13px; font-weight:600; cursor:pointer; transition:.2s; }
+    .htab:hover, .htab.active { background:#8b5e3c; color:#fff; }
+    .hotel-selector { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; margin-bottom:24px; }
+    .hs-card { background:#fff; border:2px solid #e0e0e0; border-radius:10px; padding:14px; cursor:pointer; transition:.2s; }
+    .hs-card:hover { border-color:#8b5e3c; }
+    .hs-card.selected { border-color:#8b5e3c; background:#fdf6f0; }
+    .hs-card img { width:100%; height:100px; object-fit:cover; border-radius:6px; margin-bottom:8px; }
+    .hs-card h4 { margin:0 0 4px; font-size:14px; }
+    .hs-card p  { margin:0; font-size:12px; color:#888; }
+    .section-card { background:#fff; border:1px solid #e8e8e8; border-radius:12px; padding:22px; margin-bottom:18px; }
+    .section-card h3 { margin:0 0 16px; font-size:17px; color:#3d2a1c; border-bottom:2px solid #f0e8e0; padding-bottom:10px; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .form-group { margin-bottom:12px; }
+    .form-group label { display:block; font-size:13px; font-weight:600; color:#555; margin-bottom:4px; }
+    .form-group input, .form-group select, .form-group textarea { width:100%; padding:10px 12px; border:1.5px solid #ddd; border-radius:8px; font-size:14px; box-sizing:border-box; outline:none; transition:border-color .2s; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:#8b5e3c; }
+    .btn-save { background:#8b5e3c; color:#fff; border:none; padding:10px 24px; border-radius:8px; cursor:pointer; font-size:14px; font-weight:600; }
+    .btn-save:hover { background:#6f472d; }
+    .btn-add { background:#e8f5e9; color:#2e7d32; border:1px solid #a5d6a7; padding:7px 14px; border-radius:6px; cursor:pointer; font-size:13px; }
+    .btn-del { background:#fce4ec; color:#c62828; border:none; padding:5px 10px; border-radius:6px; cursor:pointer; font-size:12px; }
+    .btn-pub { background:#e3f2fd; color:#1565c0; border:1px solid #90caf9; padding:7px 14px; border-radius:6px; cursor:pointer; font-size:13px; }
+    .room-row { display:grid; grid-template-columns:2fr 1fr 1fr 1fr 40px; gap:8px; align-items:center; margin-bottom:8px; }
+    .room-row input, .room-row select { padding:8px; border:1px solid #ddd; border-radius:6px; font-size:13px; width:100%; box-sizing:border-box; }
+    .booking-item { background:#fff; border:1px solid #e0e0e0; border-radius:8px; padding:14px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
+    .post-item { background:#fff; border:1px solid #e0e0e0; border-radius:8px; padding:14px; margin-bottom:10px; }
+    .post-item h4 { margin:0 0 6px; font-size:15px; }
+    .post-item p  { margin:0 0 6px; color:#555; font-size:13px; line-height:1.6; }
+    .status-pending   { background:#fff3cd; color:#856404; padding:3px 10px; border-radius:12px; font-size:12px; font-weight:600; }
+    .status-confirmed { background:#d1e7dd; color:#0f5132; padding:3px 10px; border-radius:12px; font-size:12px; font-weight:600; }
+    .status-completed { background:#cfe2ff; color:#084298; padding:3px 10px; border-radius:12px; font-size:12px; font-weight:600; }
+    .status-cancelled { background:#f8d7da; color:#842029; padding:3px 10px; border-radius:12px; font-size:12px; font-weight:600; }
+    .empty-state { text-align:center; padding:40px 20px; color:#999; }
+    .empty-state span { font-size:40px; display:block; margin-bottom:10px; }
+    select.status-sel { padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px; }
+    #msgBar { display:none; position:fixed; bottom:24px; right:24px; background:#333; color:#fff; padding:12px 20px; border-radius:8px; font-size:14px; z-index:9999; box-shadow:0 4px 12px rgba(0,0,0,.2); }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo"><div class="logo-icon">VL</div><h1>Quản lý Khách Sạn</h1></div>
+  <nav class="navbar">
+    <a href="index.html">Trang chủ</a>
+    <a href="profile.html">Tài khoản</a>
+    <a href="admin.html" id="adminLink" style="display:none;">Admin</a>
+    <a href="#" id="logoutBtn" style="color:#e44d26;">Đăng xuất</a>
+  </nav>
+</header>
+
+<div id="msgBar"></div>
+
+<div class="owner-wrap">
+  <!-- Banner -->
+  <div class="banner">
+    <div>
+      <h2 id="bName">Đang tải...</h2>
+      <p id="bEmail"></p>
+    </div>
+    <span id="bVerify"></span>
+  </div>
+
+  <!-- Tabs chính -->
+  <div class="hotel-tabs">
+    <button class="htab active" data-tab="hotels">🏨 Khách sạn của tôi</button>
+    <button class="htab" data-tab="bookings">📋 Đặt phòng</button>
+    <button class="htab" data-tab="register">➕ Đăng ký KS mới</button>
+  </div>
+
+  <!-- ===== TAB: KHÁCH SẠN ===== -->
+  <div id="tab-hotels">
+    <p style="color:#888;font-size:13px;margin-bottom:12px;">Chọn khách sạn để quản lý:</p>
+    <div class="hotel-selector" id="hotelSelector">
+      <div class="empty-state"><span>⏳</span>Đang tải...</div>
+    </div>
+
+    <!-- Chi tiết KS được chọn -->
+    <div id="hotelDetail" style="display:none;">
+      <div class="hotel-tabs" style="margin-bottom:16px;">
+        <button class="htab active" data-sub="info">📝 Thông tin</button>
+        <button class="htab" data-sub="rooms">🛏️ Phòng trống</button>
+        <button class="htab" data-sub="posts">📢 Bài đăng</button>
+        <button class="htab" data-sub="bookings2">📋 Đặt phòng</button>
+      </div>
+
+      <!-- Sub: Thông tin KS -->
+      <div id="sub-info" class="section-card">
+        <h3>📝 Thông tin khách sạn: <span id="selHotelName" style="color:#8b5e3c;"></span></h3>
+        <form id="infoForm">
+          <input type="hidden" id="selHotelId">
+          <div class="form-row">
+            <div class="form-group"><label>Tên KS *</label><input id="iName" required></div>
+            <div class="form-group"><label>Giá/đêm (VNĐ) *</label><input type="number" id="iPrice" required></div>
+            <div class="form-group"><label>Số điện thoại</label><input id="iPhone"></div>
+            <div class="form-group"><label>Email KS</label><input type="email" id="iEmail"></div>
+            <div class="form-group"><label>Quận/Huyện</label><input id="iDistrict"></div>
+            <div class="form-group"><label>Số sao</label>
+              <select id="iStar">
+                <option value="1">1 ⭐</option>
+                <option value="1.5">1.5 ⭐</option>
+                <option value="2">2 ⭐⭐</option>
+                <option value="2.5">2.5 ⭐⭐</option>
+                <option value="3">3 ⭐⭐⭐</option>
+                <option value="3.5">3.5 ⭐⭐⭐</option>
+                <option value="4">4 ⭐⭐⭐⭐</option>
+                <option value="4.5">4.5 ⭐⭐⭐⭐</option>
+                <option value="5">5 ⭐⭐⭐⭐⭐</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group"><label>Địa chỉ</label><input id="iAddress"></div>
+          <div class="form-group"><label>Mô tả</label><textarea id="iDesc" rows="3"></textarea></div>
+          <div class="form-group"><label>Ảnh đại diện</label><input type="file" id="iImage" accept="image/*"></div>
+          <button type="submit" class="btn-save">💾 Lưu thay đổi</button>
+          <span id="infoMsg" style="margin-left:12px;font-size:13px;"></span>
+        </form>
+      </div>
+
+      <!-- Sub: Phòng trống -->
+      <div id="sub-rooms" class="section-card" style="display:none;">
+        <h3>🛏️ Quản lý phòng — <span id="roomsHotelName" style="color:#8b5e3c;"></span></h3>
+        <p style="font-size:13px;color:#666;margin-bottom:12px;">Số lượng = 0 → khách hàng không thể đặt phòng loại này.</p>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 40px;gap:8px;margin-bottom:6px;font-size:12px;color:#888;font-weight:600;">
+          <span>Tên phòng</span><span>Giá/đêm</span><span>Số lượng</span><span>Tối đa người</span><span></span>
+        </div>
+        <div id="roomsList"></div>
+        <button class="btn-add" onclick="addRoom()" style="margin-top:10px;">+ Thêm loại phòng</button>
+        <div style="margin-top:14px;"><button class="btn-save" onclick="saveRooms()">💾 Lưu phòng</button><span id="roomsMsg" style="margin-left:12px;font-size:13px;"></span></div>
+      </div>
+
+      <!-- Sub: Bài đăng -->
+      <div id="sub-posts" class="section-card" style="display:none;">
+        <h3>📢 Bài đăng — <span id="postsHotelName" style="color:#8b5e3c;"></span></h3>
+
+        <!-- Form đăng bài mới -->
+        <div style="background:#f8f9fa;border-radius:10px;padding:16px;margin-bottom:20px;">
+          <h4 style="margin:0 0 12px;font-size:15px;">✍️ Đăng bài mới</h4>
+          <div class="form-row">
+            <div class="form-group"><label>Tiêu đề *</label><input id="pTitle" placeholder="Khuyến mãi mùa hè, sự kiện..."></div>
+            <div class="form-group"><label>Loại bài</label>
+              <select id="pType">
+                <option value="news">📰 Tin tức</option>
+                <option value="promotion">🎉 Khuyến mãi</option>
+                <option value="event">🎪 Sự kiện</option>
+                <option value="update">🔄 Cập nhật</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group"><label>Nội dung *</label><textarea id="pContent" rows="3" placeholder="Nội dung bài đăng..."></textarea></div>
+          <div class="form-group"><label>Link ảnh (tùy chọn)</label><input id="pImage" placeholder="https://..."></div>
+          <button class="btn-pub" onclick="submitPost()">📢 Đăng bài</button>
+          <span id="postMsg" style="margin-left:12px;font-size:13px;"></span>
+        </div>
+
+        <!-- Danh sách bài đăng -->
+        <div id="postsList"></div>
+      </div>
+
+      <!-- Sub: Đặt phòng của KS này -->
+      <div id="sub-bookings2" class="section-card" style="display:none;">
+        <h3>📋 Đặt phòng — <span id="bk2HotelName" style="color:#8b5e3c;"></span></h3>
+        <div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap;">
+          <select id="bk2Filter" onchange="loadHotelBookings()" class="status-sel" style="padding:8px 14px;">
+            <option value="">Tất cả</option>
+            <option value="pending">⏳ Chờ xác nhận</option>
+            <option value="confirmed">✅ Đã xác nhận</option>
+            <option value="completed">🏁 Hoàn thành</option>
+            <option value="cancelled">❌ Đã huỷ</option>
+          </select>
+        </div>
+        <div id="bk2List"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB: TẤT CẢ ĐẶT PHÒNG ===== -->
+  <div id="tab-bookings" style="display:none;">
+    <div class="section-card">
+      <h3>📋 Tất cả đặt phòng</h3>
+      <div style="margin-bottom:12px;">
+        <select id="allBkFilter" onchange="loadAllBookings()" class="status-sel" style="padding:8px 14px;">
+          <option value="">Tất cả trạng thái</option>
+          <option value="pending">⏳ Chờ xác nhận</option>
+          <option value="confirmed">✅ Đã xác nhận</option>
+          <option value="completed">🏁 Hoàn thành</option>
+          <option value="cancelled">❌ Đã huỷ</option>
+        </select>
+      </div>
+      <div id="allBkList"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB: ĐĂNG KÝ KS MỚI ===== -->
+  <div id="tab-register" style="display:none;">
+    <div class="section-card">
+      <h3>➕ Đăng ký khách sạn mới</h3>
+      <p style="color:#666;font-size:14px;margin-bottom:16px;">Điền thông tin. Admin sẽ xác thực trong 1-3 ngày làm việc.</p>
+      <form id="regForm">
+        <div class="form-row">
+          <div class="form-group"><label>Tên KS *</label><input id="rName" required></div>
+          <div class="form-group"><label>Giá/đêm *</label><input type="number" id="rPrice" required min="0"></div>
+          <div class="form-group"><label>Địa chỉ *</label><input id="rAddress" required></div>
+          <div class="form-group"><label>Quận/Huyện</label><input id="rDistrict"></div>
+          <div class="form-group"><label>Điện thoại</label><input id="rPhone"></div>
+          <div class="form-group"><label>Số sao</label>
+            <select id="rStar">
+              <option value="1">1 ⭐</option>
+              <option value="1.5">1.5 ⭐</option>
+              <option value="2">2 ⭐⭐</option>
+              <option value="2.5">2.5 ⭐⭐</option>
+              <option value="3" selected>3 ⭐⭐⭐</option>
+              <option value="3.5">3.5 ⭐⭐⭐</option>
+              <option value="4">4 ⭐⭐⭐⭐</option>
+              <option value="4.5">4.5 ⭐⭐⭐⭐</option>
+              <option value="5">5 ⭐⭐⭐⭐⭐</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label>Mô tả</label><textarea id="rDesc" rows="3"></textarea></div>
+        <button type="submit" class="btn-save">📤 Gửi đăng ký</button>
+        <span id="regMsg" style="margin-left:12px;font-size:13px;"></span>
+      </form>
+    </div>
+  </div>
+
+
+
+</div><!-- /owner-wrap -->
+
+<script>
+const API = 'http://localhost:3000/api';
+let TOKEN = localStorage.getItem('token');
+let USER  = null;
+let HOTELS = [];
+let SEL_HOTEL = null; // KS đang được chọn
+
+// ── Auth guard ────────────────────────────────────────────────────────────────
+if (!TOKEN) { location.href = 'login.html'; }
+
+// Logout
+document.getElementById('logoutBtn').addEventListener('click', e => {
+  e.preventDefault();
+  localStorage.clear();
+  location.href = 'index.html';
+});
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function fmt(p)    { return Number(p||0).toLocaleString('vi-VN'); }
+function fmtD(d)   { return d ? new Date(d).toLocaleDateString('vi-VN') : '—'; }
+function fmtDT(d)  { return d ? new Date(d).toLocaleString('vi-VN',{dateStyle:'short',timeStyle:'short'}) : '—'; }
+function imgSrc(i) { return (!i||i.includes('default'))?'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=300':(i.startsWith('http')?i:API.replace('/api','')+i); }
+
+function showMsg(txt, ok=true) {
+  const b = document.getElementById('msgBar');
+  b.textContent = txt;
+  b.style.background = ok ? '#2e7d32' : '#c62828';
+  b.style.display = 'block';
+  setTimeout(() => b.style.display='none', 3000);
+}
+
+async function api(path, opts={}) {
+  const res = await fetch(API + path, {
+    ...opts,
+    headers: {
+      'Authorization': 'Bearer ' + TOKEN,
+      ...( opts.body && !(opts.body instanceof FormData) ? {'Content-Type':'application/json'} : {} ),
+      ...(opts.headers||{})
+    }
+  });
+  const d = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(d.message || 'Lỗi API');
+  return d;
+}
+
+// ── Load user ─────────────────────────────────────────────────────────────────
+async function loadUser() {
+  try {
+    USER = await api('/auth/me');
+    localStorage.setItem('user', JSON.stringify(USER));
+    document.getElementById('bName').textContent  = 'Xin chào, ' + USER.full_name + '!';
+    document.getElementById('bEmail').textContent = USER.business_name || USER.email;
+    const isOwner = ['owner','admin'].includes(USER.role);
+    const verified = Number(USER.is_verified) === 1;
+    document.getElementById('bVerify').innerHTML = (isOwner && verified)
+      ? '<span class="badge-ok">✅ Đã xác thực</span>'
+      : '<span class="badge-no">⏳ Chờ xác thực</span>';
+    const al = document.getElementById('adminLink');
+    if (al && USER.role === 'admin') al.style.display = '';
+  } catch(e) {
+    localStorage.clear();
+    location.href = 'login.html';
+  }
+}
+
+// ── Tab navigation ────────────────────────────────────────────────────────────
+document.querySelectorAll('.hotel-tabs:first-of-type .htab, .hotel-tabs .htab[data-tab]').forEach(btn => {
+  if (!btn.dataset.tab) return;
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.htab[data-tab]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    ['hotels','bookings','register','verify'].forEach(t => {
+      const el = document.getElementById('tab-'+t);
+      if (el) el.style.display = (t === btn.dataset.tab) ? '' : 'none';
+    });
+    if (btn.dataset.tab === 'bookings') loadAllBookings();
+  });
+});
+
+// ── Sub-tab trong KS ──────────────────────────────────────────────────────────
+document.querySelectorAll('.htab[data-sub]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.htab[data-sub]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    ['info','rooms','posts','bookings2'].forEach(s => {
+      const el = document.getElementById('sub-'+s);
+      if (el) el.style.display = (s === btn.dataset.sub) ? '' : 'none';
+    });
+    if (btn.dataset.sub === 'rooms')     loadRooms();
+    if (btn.dataset.sub === 'posts')     loadPosts();
+    if (btn.dataset.sub === 'bookings2') loadHotelBookings();
+  });
+});
+
+// ── Load danh sách KS ─────────────────────────────────────────────────────────
+async function loadHotels() {
+  const sel = document.getElementById('hotelSelector');
+  sel.innerHTML = '<div class="empty-state"><span>⏳</span>Đang tải...</div>';
+  try {
+    const isOwner = USER && ['owner','admin'].includes(USER.role);
+    if (!isOwner) {
+      sel.innerHTML = '<div class="empty-state"><span>🏨</span><p>Bạn chưa quản lý khách sạn nào.<br>Dùng tab "Đăng ký KS mới".</p></div>';
+      return;
+    }
+    const d = await api('/owner/my-hotels');
+    HOTELS = d.hotels || [];
+    if (!HOTELS.length) {
+      sel.innerHTML = '<div class="empty-state"><span>🏨</span><p>Chưa có khách sạn nào.<br>Dùng tab "Đăng ký KS mới".</p></div>';
+      return;
+    }
+    sel.innerHTML = HOTELS.map(h => `
+      <div class="hs-card" onclick="selectHotel(${h.id})" id="hsc-${h.id}">
+        <img src="${imgSrc(h.image)}" alt="${h.name}" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=300'">
+        <h4>${h.name}</h4>
+        <p>📍 ${h.district||'Vĩnh Long'} · ${fmt(h.price)}đ/đêm</p>
+        <p>${'⭐'.repeat(Math.min(Number(h.star)||1,5))} &nbsp; ⭐ ${parseFloat(h.avg_rating||h.rating||0).toFixed(1)} (${h.review_count||h.total_reviews||0} đánh giá)</p>
+        <p>📋 ${h.booking_count||0} đặt phòng · 🛏️ ${h.available_rooms??'?'} phòng trống</p>
+        <p style="margin-top:4px;"><span class="${h.status==='active'?'status-confirmed':'status-cancelled'}">${h.status==='active'?'Đang hoạt động':'Ngừng'}</span></p>
+      </div>
+    `).join('');
+
+    // Tự chọn KS đầu tiên
+    if (HOTELS.length > 0) selectHotel(HOTELS[0].id);
+  } catch(e) {
+    sel.innerHTML = `<div class="empty-state"><span>❌</span><p>${e.message}</p></div>`;
+  }
+}
+
+// ── Chọn KS ───────────────────────────────────────────────────────────────────
+function selectHotel(id) {
+  SEL_HOTEL = HOTELS.find(h => h.id === id);
+  if (!SEL_HOTEL) return;
+
+  // Highlight card
+  document.querySelectorAll('.hs-card').forEach(c => c.classList.remove('selected'));
+  const card = document.getElementById('hsc-'+id);
+  if (card) card.classList.add('selected');
+
+  // Hiển thị detail
+  document.getElementById('hotelDetail').style.display = '';
+
+  // Điền form thông tin
+  document.getElementById('selHotelId').value  = SEL_HOTEL.id;
+  document.getElementById('selHotelName').textContent  = SEL_HOTEL.name;
+  document.getElementById('iName').value     = SEL_HOTEL.name || '';
+  document.getElementById('iPrice').value    = SEL_HOTEL.price || '';
+  document.getElementById('iPhone').value    = SEL_HOTEL.phone || '';
+  document.getElementById('iEmail').value    = SEL_HOTEL.email || '';
+  document.getElementById('iDistrict').value = SEL_HOTEL.district || '';
+  // Điền số sao — tìm option gần nhất nếu không có giá trị chính xác
+  const starSel = document.getElementById('iStar');
+  const starVal = String(parseFloat(SEL_HOTEL.star || 3));
+  // Thử chọn đúng giá trị
+  let matched = false;
+  Array.from(starSel.options).forEach(opt => {
+    if (opt.value === starVal) { opt.selected = true; matched = true; }
+  });
+  // Nếu không khớp chính xác, chọn option gần nhất
+  if (!matched) {
+    const numStar = parseFloat(starVal);
+    let closest = starSel.options[0];
+    let minDiff = Infinity;
+    Array.from(starSel.options).forEach(opt => {
+      const diff = Math.abs(parseFloat(opt.value) - numStar);
+      if (diff < minDiff) { minDiff = diff; closest = opt; }
+    });
+    closest.selected = true;
+  }
+  document.getElementById('iAddress').value  = SEL_HOTEL.address || '';
+  document.getElementById('iDesc').value     = SEL_HOTEL.description || '';
+
+  // Reset về tab Info
+  document.querySelectorAll('.htab[data-sub]').forEach(b => b.classList.remove('active'));
+  document.querySelector('.htab[data-sub="info"]').classList.add('active');
+  ['info','rooms','posts','bookings2'].forEach(s => {
+    document.getElementById('sub-'+s).style.display = (s==='info') ? '' : 'none';
+  });
+}
+
+// ── Lưu thông tin KS ─────────────────────────────────────────────────────────
+document.getElementById('infoForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const id  = document.getElementById('selHotelId').value;
+  const msg = document.getElementById('infoMsg');
+  const btn = e.target.querySelector('button');
+  btn.disabled = true; btn.textContent = '⏳ Đang lưu...';
+  try {
+    const fd = new FormData();
+    const fields = { name:'iName', price:'iPrice', phone:'iPhone', email:'iEmail', district:'iDistrict', address:'iAddress', description:'iDesc', star:'iStar' };
+    Object.entries(fields).forEach(([k,v]) => fd.append(k, document.getElementById(v).value));
+    fd.append('province','Vĩnh Long'); fd.append('status','active');
+    fd.append('latitude', SEL_HOTEL.latitude||'10.2552');
+    fd.append('longitude',SEL_HOTEL.longitude||'105.9731');
+    const img = document.getElementById('iImage').files[0];
+    if (img) fd.append('image', img);
+    const res = await fetch(`${API}/owner/hotels/${id}`, { method:'PUT', headers:{'Authorization':'Bearer '+TOKEN}, body:fd });
+    const d   = await res.json();
+    if (!res.ok) throw new Error(d.message);
+    msg.style.color='green'; msg.textContent='✅ Đã lưu!';
+    showMsg('✅ Cập nhật thành công!');
+    loadHotels();
+  } catch(err) { msg.style.color='red'; msg.textContent='❌ '+err.message; }
+  finally { btn.disabled=false; btn.textContent='💾 Lưu thay đổi'; }
+});
+
+// ── Phòng ─────────────────────────────────────────────────────────────────────
+async function loadRooms() {
+  if (!SEL_HOTEL) return;
+  document.getElementById('roomsHotelName').textContent = SEL_HOTEL.name;
+  const list = document.getElementById('roomsList');
+  list.innerHTML = '<p style="color:#999;">Đang tải...</p>';
+  try {
+    const d = await api(`/owner/hotels/${SEL_HOTEL.id}/rooms`);
+    const rooms = d.rooms || [];
+    list.innerHTML = '';
+    if (rooms.length) rooms.forEach(r => addRoom(r));
+    else addRoom();
+  } catch(e) {
+    list.innerHTML = ''; addRoom();
+  }
+}
+
+window.addRoom = function(r={}) {
+  const list = document.getElementById('roomsList');
+  const div  = document.createElement('div');
+  div.className = 'room-row';
+  // Giá mặc định: lấy từ KS đang chọn nếu phòng mới (r.price chưa có)
+  const defaultPrice = r.price || (SEL_HOTEL ? SEL_HOTEL.price : '');
+  div.innerHTML = `
+    <input type="text"   placeholder="Tên phòng (VD: Phòng Đôi)" value="${r.room_name||''}" class="rName">
+    <input type="number" placeholder="Giá"    value="${defaultPrice}"      class="rPrice" min="0">
+    <input type="number" placeholder="SL"     value="${r.quantity??1}"   class="rQty"   min="0" title="0 = hết phòng, khách không đặt được">
+    <input type="number" placeholder="Người"  value="${r.max_people||2}" class="rMax"   min="1">
+    <button type="button" onclick="this.parentElement.remove()" class="btn-del" title="Xóa">✕</button>
+  `;
+  list.appendChild(div);
+};
+
+window.saveRooms = async function() {
+  if (!SEL_HOTEL) return;
+  const msg = document.getElementById('roomsMsg');
+  msg.textContent = '⏳ Đang lưu...'; msg.style.color='#666';
+  try {
+    const rows  = document.querySelectorAll('#roomsList .room-row');
+    const rooms = Array.from(rows).map(row => ({
+      room_name:  row.querySelector('.rName').value.trim(),
+      room_type:  'Standard',
+      price:      parseFloat(row.querySelector('.rPrice').value) || 0,
+      quantity:   parseInt(row.querySelector('.rQty').value) || 0,
+      max_people: parseInt(row.querySelector('.rMax').value) || 2
+    })).filter(r => r.room_name && r.price > 0);
+    await api(`/owner/hotels/${SEL_HOTEL.id}/rooms`, { method:'PUT', body: JSON.stringify({rooms}) });
+    msg.style.color='green'; msg.textContent='✅ Đã lưu phòng!';
+    showMsg('✅ Cập nhật phòng thành công!');
+  } catch(e) { msg.style.color='red'; msg.textContent='❌ '+e.message; }
+};
+
+// ── Bài đăng ──────────────────────────────────────────────────────────────────
+async function loadPosts() {
+  if (!SEL_HOTEL) return;
+  document.getElementById('postsHotelName').textContent = SEL_HOTEL.name;
+  const list = document.getElementById('postsList');
+  list.innerHTML = '<p style="color:#999;">Đang tải...</p>';
+  try {
+    const d = await api(`/owner/hotels/${SEL_HOTEL.id}/posts`);
+    const posts = d.posts || [];
+    if (!posts.length) { list.innerHTML='<div class="empty-state"><span>📢</span><p>Chưa có bài đăng nào.</p></div>'; return; }
+    const typeLabel = { news:'📰 Tin tức', promotion:'🎉 Khuyến mãi', event:'🎪 Sự kiện', update:'🔄 Cập nhật' };
+    list.innerHTML = posts.map(p => `
+      <div class="post-item">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;">
+          <div style="flex:1;">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px;">
+              <span style="font-size:12px;background:#e8f4fd;color:#1565c0;padding:2px 8px;border-radius:12px;">${typeLabel[p.type]||p.type}</span>
+              <small style="color:#aaa;">${fmtDT(p.created_at)}</small>
+            </div>
+            <h4>${p.title}</h4>
+            <p>${p.content}</p>
+            ${p.image_url ? `<img src="${p.image_url}" style="max-width:100%;border-radius:6px;margin-top:6px;" onerror="this.style.display='none'">` : ''}
+          </div>
+          <button onclick="deletePost(${p.id})" class="btn-del" style="flex-shrink:0;">🗑️ Xóa</button>
+        </div>
+      </div>
+    `).join('');
+  } catch(e) { list.innerHTML=`<p style="color:red;">${e.message}</p>`; }
+}
+
+window.submitPost = async function() {
+  const title   = document.getElementById('pTitle').value.trim();
+  const content = document.getElementById('pContent').value.trim();
+  const type    = document.getElementById('pType').value;
+  const image   = document.getElementById('pImage').value.trim();
+  const msg     = document.getElementById('postMsg');
+  if (!title || !content) { msg.style.color='red'; msg.textContent='❌ Vui lòng điền tiêu đề và nội dung.'; return; }
+  try {
+    await api(`/owner/hotels/${SEL_HOTEL.id}/posts`, { method:'POST', body: JSON.stringify({title,content,type,image_url:image||null}) });
+    msg.style.color='green'; msg.textContent='✅ Đã đăng bài!';
+    document.getElementById('pTitle').value=''; document.getElementById('pContent').value=''; document.getElementById('pImage').value='';
+    showMsg('✅ Đăng bài thành công!');
+    loadPosts();
+  } catch(e) { msg.style.color='red'; msg.textContent='❌ '+e.message; }
+};
+
+window.deletePost = async function(postId) {
+  if (!confirm('Xóa bài đăng này?')) return;
+  try {
+    await api(`/owner/hotels/${SEL_HOTEL.id}/posts/${postId}`, { method:'DELETE' });
+    showMsg('✅ Đã xóa bài đăng.');
+    loadPosts();
+  } catch(e) { showMsg('❌ '+e.message, false); }
+};
+
+// ── Đặt phòng của 1 KS ───────────────────────────────────────────────────────
+window.loadHotelBookings = async function() {
+  if (!SEL_HOTEL) return;
+  document.getElementById('bk2HotelName').textContent = SEL_HOTEL.name;
+  const status = document.getElementById('bk2Filter').value;
+  const list   = document.getElementById('bk2List');
+  list.innerHTML = '<p style="color:#999;">Đang tải...</p>';
+  try {
+    const q = `?limit=50${status?'&status='+status:''}`;
+    const d = await api('/owner/bookings' + q);
+    const bks = (d.bookings||[]).filter(b => b.hotel_id === SEL_HOTEL.id || b.hotel_name === SEL_HOTEL.name);
+    renderBookings(bks, list);
+  } catch(e) { list.innerHTML=`<p style="color:red;">${e.message}</p>`; }
+};
+
+// ── Tất cả đặt phòng ─────────────────────────────────────────────────────────
+window.loadAllBookings = async function() {
+  const status = document.getElementById('allBkFilter').value;
+  const list   = document.getElementById('allBkList');
+  list.innerHTML = '<p style="color:#999;">Đang tải...</p>';
+  try {
+    const q = `?limit=100${status?'&status='+status:''}`;
+    const d = await api('/owner/bookings' + q);
+    renderBookings(d.bookings||[], list);
+  } catch(e) { list.innerHTML=`<p style="color:red;">${e.message}</p>`; }
+};
+
+function renderBookings(bks, container) {
+  if (!bks.length) { container.innerHTML='<div class="empty-state"><span>📋</span><p>Chưa có đặt phòng nào.</p></div>'; return; }
+  container.innerHTML = bks.map(b => {
+    const toEmail = b.user_email || '';
+    const canAct  = ['pending','confirmed'].includes(b.status);
+
+    return `
+    <div class="booking-item" id="bkitem-${b.id}">
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:600;font-size:15px;margin-bottom:4px;">🏨 ${b.hotel_name} <small style="color:#999;font-weight:400;">#${b.id}</small></div>
+        <div style="font-size:13px;color:#555;">👤 ${b.user_name} · 📧 ${toEmail || '<em style="color:#bbb;">Không có email</em>'}</div>
+        <div style="font-size:13px;color:#555;">📅 ${fmtD(b.check_in)} → ${fmtD(b.check_out)} · 💰 ${fmt(b.total_price)}đ</div>
+        <div style="margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="status-${b.status}">${{pending:'⏳ Chờ xác nhận',confirmed:'✅ Đã xác nhận',completed:'🏁 Hoàn thành',cancelled:'❌ Đã huỷ'}[b.status]||b.status}</span>
+          <span id="email-status-${b.id}" style="font-size:12px;color:#2e7d32;"></span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;">
+        ${b.status==='pending' ? `
+        <button onclick="confirmBk(${b.id})" style="background:#4CAF50;color:#fff;border:none;padding:7px 14px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;">
+          ✅ Xác nhận
+        </button>` : ''}
+        ${canAct ? `
+        <button onclick="cancelBk(${b.id})" style="background:#f44336;color:#fff;border:none;padding:7px 14px;border-radius:6px;cursor:pointer;font-size:13px;">
+          ❌ Huỷ
+        </button>` : ''}
+        ${b.status==='confirmed' ? `
+        <button onclick="completeBk(${b.id})" style="background:#2196F3;color:#fff;border:none;padding:7px 14px;border-radius:6px;cursor:pointer;font-size:13px;">
+          🏁 Hoàn thành
+        </button>` : ''}
+        ${canAct && toEmail ? `
+        <button onclick="sendEmailToBk(${b.id})" id="emailBtn-${b.id}"
+          title="Gửi email xác nhận đến ${toEmail}"
+          style="background:#EA4335;color:#fff;border:none;padding:7px 12px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;">
+          📧 Gửi email
+        </button>` : (canAct && !toEmail ? `
+        <span style="font-size:11px;color:#bbb;font-style:italic;">Khách không có email</span>` : '')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function changeBkStatus(id, status) {
+  try {
+    await api(`/owner/bookings/${id}/status`, { method:'PUT', body: JSON.stringify({status}) });
+
+    // Khi xác nhận → tự động gửi email thông báo cho khách
+    if (status === 'confirmed') {
+      showMsg('✅ Đã xác nhận! Đang gửi email thông báo...');
+      try {
+        const emailRes = await api(`/owner/bookings/${id}/send-email`, { method:'POST' });
+        const statusEl = document.getElementById(`email-status-${id}`);
+        showMsg(`✅ Đã xác nhận & ${emailRes.sent ? 'gửi email thành công!' : emailRes.message}`);
+      } catch(emailErr) {
+        showMsg('✅ Đã xác nhận! (Gửi email thất bại: ' + emailErr.message + ')', false);
+      }
+    } else {
+      showMsg('✅ Cập nhật trạng thái thành công!');
+    }
+
+    loadAllBookings();
+    if (SEL_HOTEL) loadHotelBookings();
+  } catch(e) { showMsg('❌ '+e.message, false); }
+}
+
+// Gửi email thủ công cho booking đã xác nhận
+window.sendEmailToBk = async function(id) {
+  const btn = document.getElementById(`emailBtn-${id}`);
+  const statusEl = document.getElementById(`email-status-${id}`);
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Đang gửi...'; }
+  if (statusEl) { statusEl.textContent = ''; }
+  try {
+    const res = await api(`/owner/bookings/${id}/send-email`, { method:'POST' });
+    if (btn) { btn.textContent = '✅ Đã gửi'; btn.style.background = '#388e3c'; }
+    if (statusEl) { statusEl.textContent = res.sent ? '📧 Email đã gửi' : res.message; statusEl.style.color = res.sent ? '#2e7d32' : '#f57c00'; }
+    showMsg(res.sent ? `✅ Đã gửi email xác nhận cho khách!` : res.message);
+    // Restore nút sau 5 giây
+    setTimeout(() => {
+      if (btn) { btn.disabled = false; btn.textContent = '📧 Gửi email'; btn.style.background = '#EA4335'; }
+    }, 5000);
+  } catch(e) {
+    if (btn) { btn.disabled = false; btn.textContent = '📧 Gửi email'; }
+    if (statusEl) { statusEl.textContent = '❌ Gửi thất bại'; statusEl.style.color = '#c62828'; }
+    showMsg('❌ Gửi email thất bại: ' + e.message, false);
+  }
+};
+window.confirmBk  = id => changeBkStatus(id,'confirmed');
+window.cancelBk   = id => { if(confirm('Huỷ đặt phòng này?')) changeBkStatus(id,'cancelled'); };
+window.completeBk = id => changeBkStatus(id,'completed');
+
+// ── Đăng ký KS mới ───────────────────────────────────────────────────────────
+document.getElementById('regForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const msg = document.getElementById('regMsg');
+  const btn = e.target.querySelector('button');
+  btn.disabled=true; btn.textContent='⏳ Đang gửi...';
+  try {
+    const d = await api('/owner/register-hotel', { method:'POST', body: JSON.stringify({
+      hotel_name: document.getElementById('rName').value,
+      price:      document.getElementById('rPrice').value,
+      address:    document.getElementById('rAddress').value,
+      district:   document.getElementById('rDistrict').value,
+      phone:      document.getElementById('rPhone').value,
+      star:       document.getElementById('rStar').value,
+      description:document.getElementById('rDesc').value,
+    })});
+    msg.style.color='green'; msg.textContent='✅ '+d.message;
+    e.target.reset();
+    setTimeout(loadHotels, 2000);
+  } catch(err) { msg.style.color='red'; msg.textContent='❌ '+err.message; }
+  finally { btn.disabled=false; btn.textContent='📤 Gửi đăng ký'; }
+});
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+(async function() {
+  await loadUser();
+  loadHotels();
+})();
+</script>
+<script src="js/nav-notify.js"></script>
+</body>
+</html>

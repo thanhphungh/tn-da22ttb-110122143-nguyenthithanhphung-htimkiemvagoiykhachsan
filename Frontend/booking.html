@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đặt phòng - VinhLong Hotel</title>
+  <link rel="stylesheet" href="css/booking.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">VL</div>
+      <h1>VinhLong</h1>
+    </div>
+    <nav class="navbar">
+      <a href="index.html">Trang chủ</a>
+      <a href="search.html">Tìm kiếm</a>
+      <a href="map.html">Bản đồ</a>
+      <a href="admin.html" id="adminNav" style="display:none;">Admin</a>
+      <a href="owner.html" id="ownerNav" style="display:none;">Quản lý KS</a>
+      <a href="profile.html" id="profileNav" style="display:none;">Tài khoản</a>
+      <a href="login.html" id="loginNav">Đăng nhập</a>
+    </nav>
+  </header>
+  <script src="js/nav-sync.js"></script>
+
+  <section class="booking-section">
+    <div class="container">
+      <div class="booking-card">
+        <h1>Đặt phòng</h1>
+
+        <div class="row">
+          <label>Khách sạn</label>
+          <div id="hotelName">...</div>
+        </div>
+
+        <div class="row">
+          <label>Ngày nhận</label>
+          <input type="date" id="checkIn" />
+        </div>
+
+        <div class="row">
+          <label>Ngày trả</label>
+          <input type="date" id="checkOut" />
+        </div>
+
+        <div class="row">
+          <label>Số phòng</label>
+          <input type="number" id="totalRooms" min="1" value="1" />
+        </div>
+
+        <div class="row">
+          <label>Tổng giá (ước tính)</label>
+          <input type="number" id="totalPrice" min="0" step="1000" />
+        </div>
+
+        <button type="button" id="bookBtn">Xác nhận đặt phòng</button>
+        <p id="status" class="status"></p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div>
+        <h2>VinhLong Hotel</h2>
+        <p>Hệ thống hỗ trợ tìm kiếm và gợi ý khách sạn thông minh tại tỉnh Vĩnh Long.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="js/booking.js"></script>
+  <script src="js/nav-notify.js"></script>
+  <script type="module" src="js/nav-auth.js"></script>
+</body>
+</html>

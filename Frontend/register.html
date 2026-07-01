@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng ký - VinhLong Hotel</title>
+  <link rel="stylesheet" href="css/register.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    .type-card { transition:all 0.2s; border-radius:10px; padding:14px; text-align:center; cursor:pointer; }
+    .type-card.selected { border-color:#8b5e3c !important; background:#fdf6f0 !important; }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <div class="logo-icon">VL</div>
+    <h1>VinhLong</h1>
+  </div>
+    <nav class="navbar">
+      <a href="index.html">Trang chủ</a>
+      <a href="search.html">Tìm kiếm</a>
+      <a href="map.html">Bản đồ</a>
+      <a href="admin.html" id="adminNav" style="display:none;">Admin</a>
+      <a href="owner.html" id="ownerNav" style="display:none;">Quản lý KS</a>
+      <a href="profile.html" id="profileNav" style="display:none;">Tài khoản</a>
+      <a href="login.html" id="loginNav">Đăng nhập</a>
+    </nav>
+  </header>
+  <script src="js/nav-sync.js"></script>
+
+<section class="register-section">
+  <div class="register-container">
+
+    <!-- LEFT -->
+    <div class="register-left">
+      <div class="overlay"></div>
+      <div class="left-content">
+        <h1>Tạo tài khoản mới</h1>
+        <p>Đăng ký để sử dụng hệ thống tìm kiếm, gợi ý và đặt phòng khách sạn thông minh tại Vĩnh Long.</p>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="register-right">
+      <h2>Đăng ký tài khoản</h2>
+      <p class="subtitle">Điền thông tin để tạo tài khoản mới</p>
+
+      <!-- Loại tài khoản -->
+      <div style="display:flex;gap:10px;margin-bottom:20px;">
+        <div class="type-card selected" id="cardUser" style="flex:1;border:2px solid #8b5e3c;" onclick="selectType('user')">
+          <div style="font-size:28px;margin-bottom:6px;">👤</div>
+          <div style="font-weight:700;font-size:14px;color:#8b5e3c;">Khách hàng</div>
+          <div style="font-size:12px;color:#888;margin-top:3px;">Tìm kiếm & đặt phòng</div>
+        </div>
+        <div class="type-card" id="cardOwner" style="flex:1;border:2px solid #ddd;" onclick="selectType('owner')">
+          <div style="font-size:28px;margin-bottom:6px;">🏨</div>
+          <div style="font-weight:700;font-size:14px;color:#555;">Chủ Khách Sạn</div>
+          <div style="font-size:12px;color:#888;margin-top:3px;">Quản lý khách sạn</div>
+        </div>
+      </div>
+      <input type="hidden" id="accountType" value="user">
+
+      <!-- Form đăng ký -->
+      <form id="registerForm" novalidate>
+
+        <div class="input-box">
+          <label>Họ và tên *</label>
+          <input type="text" id="regName" placeholder="Nhập họ và tên" required>
+        </div>
+
+        <div class="input-box">
+          <label>Email *</label>
+          <input type="email" id="regEmail" placeholder="Nhập email" required>
+        </div>
+
+        <div class="input-box">
+          <label>Số điện thoại *</label>
+          <input type="text" id="regPhone" placeholder="Nhập số điện thoại" required>
+        </div>
+
+        <div class="input-box">
+          <label>Mật khẩu * (ít nhất 6 ký tự)</label>
+          <input type="password" id="regPassword" placeholder="Nhập mật khẩu" required>
+        </div>
+
+        <div class="input-box">
+          <label>Xác nhận mật khẩu *</label>
+          <input type="password" id="regPassword2" placeholder="Nhập lại mật khẩu" required>
+        </div>
+
+        <!-- Thông tin chủ KS (ẩn mặc định) -->
+        <div id="ownerFields" style="display:none;">
+          <div class="input-box">
+            <label>Tên doanh nghiệp</label>
+            <input type="text" id="regBusiness" placeholder="VD: Công ty TNHH ABC">
+          </div>
+          <div class="input-box">
+            <label>Tên khách sạn muốn đăng ký</label>
+            <input type="text" id="regHotelName" placeholder="VD: Khách Sạn Bình Minh">
+          </div>
+          <div style="background:#fff3cd;border:1px solid #ffb300;border-radius:8px;padding:12px;font-size:13px;color:#856404;margin-bottom:12px;">
+            📋 Admin sẽ xác thực thông tin trong 1-3 ngày. Bạn sẽ nhận OTP qua email.
+          </div>
+        </div>
+
+        <div class="checkbox-box">
+          <label>
+            <input type="checkbox" id="regAgree">
+            Tôi đồng ý với điều khoản sử dụng
+          </label>
+        </div>
+
+        <button type="submit" class="register-btn" id="registerBtn">Đăng ký tài khoản</button>
+        <p id="registerStatus" style="margin-top:10px;font-size:13px;text-align:center;min-height:20px;"></p>
+
+      </form>
+
+      <div class="login-link">
+        Đã có tài khoản? <a href="login.html">Đăng nhập ngay</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-content">
+    <div><h2>VinhLong Hotel</h2><p>Hệ thống gợi ý khách sạn tại Vĩnh Long.</p></div>
+    <div><h3>Liên kết</h3><ul><li>Trang chủ</li><li>Tìm kiếm</li><li>Bản đồ</li></ul></div>
+    <div><h3>Liên hệ</h3><ul><li>Email: vinhlong@gmail.com</li><li>Hotline: 0123456789</li></ul></div>
+  </div>
+</footer>
+
+<script>
+  const API_BASE = 'http://localhost:3000/api';
+
+function selectType(type) {
+  document.getElementById('accountType').value = type;
+  const cu = document.getElementById('cardUser');
+  const co = document.getElementById('cardOwner');
+  if (type === 'user') {
+    cu.classList.add('selected');    cu.style.borderColor = '#8b5e3c';
+    co.classList.remove('selected'); co.style.borderColor = '#ddd';
+    document.getElementById('ownerFields').style.display = 'none';
+    document.getElementById('registerBtn').textContent = 'Đăng ký tài khoản';
+  } else {
+    co.classList.add('selected');    co.style.borderColor = '#8b5e3c';
+    cu.classList.remove('selected'); cu.style.borderColor = '#ddd';
+    document.getElementById('ownerFields').style.display = '';
+    document.getElementById('registerBtn').textContent = '🏨 Đăng ký làm Chủ KS';
+  }
+}
+
+document.getElementById('registerForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const statusEl = document.getElementById('registerStatus');
+  const btn      = document.getElementById('registerBtn');
+
+  const full_name    = document.getElementById('regName').value.trim();
+  const email        = document.getElementById('regEmail').value.trim();
+  const phone        = document.getElementById('regPhone').value.trim();
+  const password     = document.getElementById('regPassword').value;
+  const password2    = document.getElementById('regPassword2').value;
+  const agree        = document.getElementById('regAgree').checked;
+  const accountType  = document.getElementById('accountType').value;
+  const businessName = document.getElementById('regBusiness')?.value?.trim();
+
+  // Validation
+  if (!full_name || !email || !phone || !password) {
+    statusEl.style.color = 'red'; statusEl.textContent = '❌ Vui lòng điền đầy đủ thông tin.'; return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    statusEl.style.color = 'red'; statusEl.textContent = '❌ Email không hợp lệ.'; return;
+  }
+  if (password.length < 6) {
+    statusEl.style.color = 'red'; statusEl.textContent = '❌ Mật khẩu phải có ít nhất 6 ký tự.'; return;
+  }
+  if (password !== password2) {
+    statusEl.style.color = 'red'; statusEl.textContent = '❌ Mật khẩu xác nhận không khớp.'; return;
+  }
+  if (!agree) {
+    statusEl.style.color = 'red'; statusEl.textContent = '❌ Vui lòng đồng ý điều khoản.'; return;
+  }
+
+  btn.disabled = true; btn.textContent = '⏳ Đang xử lý...';
+  statusEl.textContent = '';
+
+  try {
+    // Bước 1: Đăng ký tài khoản
+    const res = await fetch(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ full_name, email, password, phone })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    sessionStorage.setItem('_justLoggedIn', '1');
+    sessionStorage.removeItem('_greeted');
+
+    if (accountType === 'owner') {
+      // Bước 2: Gửi OTP xác thực email chủ KS
+      statusEl.style.color = '#1565c0'; statusEl.textContent = '⏳ Đang gửi OTP xác thực...';
+      try {
+        const otpRes = await fetch(`${API_BASE}/owner/request-verification`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${data.token}` },
+          body: JSON.stringify({ email, business_name: businessName })
+        });
+        const otpData = await otpRes.json();
+        statusEl.style.color = 'green';
+        statusEl.textContent = otpData.otp
+          ? `✅ OTP (dev): ${otpData.otp} — Đang chuyển hướng...`
+          : '✅ Đã gửi OTP đến email. Đang chuyển hướng...';
+      } catch {
+        statusEl.style.color = '#856404';
+        statusEl.textContent = '⚠️ Tài khoản tạo thành công. Xác thực email trong trang Quản lý KS.';
+      }
+      setTimeout(() => { window.location.href = 'owner.html'; }, 2000);
+    } else {
+      statusEl.style.color = 'green';
+      statusEl.textContent = `✅ Đăng ký thành công! Xin chào, ${full_name}!`;
+      setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+    }
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = accountType === 'owner' ? '🏨 Đăng ký làm Chủ KS' : 'Đăng ký tài khoản';
+    statusEl.style.color = 'red';
+    statusEl.textContent = '❌ ' + (err.message || 'Đăng ký thất bại.');
+  }
+});
+</script>
+  <script type="module" src="js/nav-auth.js"></script>
+  <script src="js/nav-notify.js"></script>
+</body>
+</html>

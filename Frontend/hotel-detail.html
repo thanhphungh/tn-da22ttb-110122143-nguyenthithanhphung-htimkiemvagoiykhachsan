@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chi tiết khách sạn - VinhLong Hotel</title>
+  <link rel="stylesheet" href="css/hotel-detail.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">VL</div>
+      <h1>VinhLong</h1>
+    </div>
+    <nav class="navbar">
+      <a href="index.html">Trang chủ</a>
+      <a href="search.html">Tìm kiếm</a>
+      <a href="map.html">Bản đồ</a>
+      <a href="admin.html" id="adminNav" style="display:none;">Admin</a>
+      <a href="owner.html" id="ownerNav" style="display:none;">Quản lý KS</a>
+      <a href="profile.html" id="profileNav" style="display:none;">Tài khoản</a>
+      <a href="login.html" id="loginNav">Đăng nhập</a>
+    </nav>
+  </header>
+  <script src="js/nav-sync.js"></script>
+
+  <section class="hotel-detail-section">
+    <div class="container">
+      <div class="hotel-detail-grid">
+        <div class="left">
+          <!-- Gallery ảnh chính -->
+          <div id="mainImageWrapper" style="position:relative;overflow:hidden;border-radius:10px;">
+            <img id="hotelImage" src="" alt="Hotel" style="width:100%;max-height:420px;object-fit:cover;border-radius:10px;">
+          </div>
+          <!-- Thumbnail gallery -->
+          <div id="hotelGallery" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;"></div>
+        </div>
+        <div class="right">
+          <h1 id="hotelName">...</h1>
+          <p id="hotelAddress" style="color:#666;margin:4px 0 8px;">...</p>
+
+          <!-- Sao & rating -->
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;">
+            <div class="rating" style="font-size:20px;">
+              ⭐ <span id="hotelRating">0</span>
+            </div>
+            <span id="hotelStars" style="color:#f5a623;font-size:18px;"></span>
+            <span id="hotelReviewCount" style="color:#888;font-size:13px;"></span>
+          </div>
+
+          <!-- Stats: lượt xem, lượt thích, phòng trống -->
+          <div id="hotelStats" style="display:flex;gap:16px;margin:10px 0 14px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:5px;font-size:13px;color:#666;">
+              👁️ <span id="statViews">–</span> lượt xem
+            </div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:13px;color:#e44d26;">
+              ❤️ <span id="statFavorites">–</span> lượt thích
+            </div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:13px;color:#4CAF50;">
+              🛏️ <span id="statRooms">–</span> phòng trống
+            </div>
+          </div>
+
+          <p class="price" style="margin:8px 0;font-size:18px;">
+            Giá từ: <b id="hotelPrice" style="color:#e44d26;">0</b> <span style="font-size:13px;color:#888;">đ/đêm</span>
+          </p>
+
+          <h3 style="margin-top:16px;">Mô tả</h3>
+          <p id="hotelDescription" style="color:#555;line-height:1.7;">...</p>
+
+          <div id="hotelServices" style="margin:16px 0;"></div>
+
+          <div class="actions" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;">
+            <div style="flex:1;">
+              <button id="bookBtn"
+                style="width:100%;padding:12px;background:#2196F3;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:15px;font-weight:bold;">
+                🛏️ Đặt phòng ngay
+              </button>
+            </div>
+            <button id="favoriteBtn" type="button"
+              style="padding:12px 18px;border:2px solid #e0e0e0;background:#fff;border-radius:8px;cursor:pointer;font-size:15px;">
+              🤍 Yêu thích
+            </button>
+          </div>
+          <div style="margin-top:10px;">
+            <button id="directionsBtn" type="button"
+              style="width:100%;padding:11px;background:#4CAF50;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:bold;">
+              🗺️ Chỉ đường đến đây
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phòng -->
+      <div id="hotelRooms" style="margin-top:32px;"></div>
+
+      <!-- Đánh giá -->
+      <div id="hotelReviews" style="margin-top:32px;"></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div>
+        <h2>VinhLong Hotel</h2>
+        <p>Hệ thống hỗ trợ tìm kiếm và gợi ý khách sạn thông minh tại tỉnh Vĩnh Long.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="js/hotel.js"></script>
+  <script type="module" src="js/nav-auth.js"></script>
+  <script src="js/nav-notify.js"></script>
+</body>
+</html>
+

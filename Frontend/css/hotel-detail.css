@@ -1,0 +1,133 @@
+/* =========================
+   HOTEL DETAIL PAGE
+========================= */
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family: Arial, sans-serif;
+}
+
+body{
+  background:#f8f5f0;
+  color:#3d2a1c;
+  line-height:1.6;
+}
+
+.header{
+  width:100%;
+  padding:20px 60px;
+  background:white;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:sticky;
+  top:0;
+  z-index:1000;
+  box-shadow:0 2px 10px rgba(0,0,0,0.08);
+}
+
+.logo{display:flex;align-items:center;gap:15px;}
+.logo-icon{
+  width:50px;height:50px;
+  background:#8b5e3c;color:white;
+  display:flex;justify-content:center;align-items:center;
+  border-radius:12px;font-size:24px;font-weight:bold;
+}
+.logo h1{font-size:30px;}
+.navbar{display:flex;gap:30px;}
+.navbar a{text-decoration:none;color:#3d2a1c;font-weight:bold;transition:.3s;}
+.navbar a:hover{color:#8b5e3c;}
+
+.hotel-detail-section{
+  width:90%;
+  margin:40px auto;
+}
+
+.container{max-width:1100px;margin:0 auto;}
+
+.hotel-detail-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:30px;
+  align-items:start;
+}
+
+.left{
+  background:white;
+  padding:12px;
+  border-radius:20px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.08);
+}
+
+#hotelImage{
+  width:100%;
+  height:420px;
+  object-fit:cover;
+  border-radius:14px;
+}
+
+.right{
+  background:white;
+  padding:25px;
+  border-radius:20px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.08);
+}
+
+.rating{color:orange;font-weight:bold;margin:12px 0;}
+.price{margin:12px 0 20px;}
+
+.right h1{color:#8b5e3c;margin-bottom:8px;}
+.right p{color:#666;margin:8px 0;}
+
+.actions{
+  display:flex;
+  gap:14px;
+  align-items:center;
+  margin-top:20px;
+}
+
+#bookLink{
+  text-decoration:none;
+  background:#8b5e3c;
+  color:white;
+  padding:12px 18px;
+  border-radius:12px;
+  font-weight:bold;
+  transition:.3s;
+  display:inline-block;
+}
+
+#bookLink:hover{background:#6d472d;}
+
+#favoriteBtn{
+  background:#fff4ea;
+  border:1px solid #f1d6b6;
+  color:#8b5e3c;
+  padding:12px 18px;
+  border-radius:12px;
+  cursor:pointer;
+  font-size:16px;
+  transition:.3s;
+}
+
+#favoriteBtn:hover{background:#8b5e3c;color:white;border-color:#8b5e3c;}
+
+.footer{
+  background:#3d2a1c;
+  color:white;
+  padding:70px 10%;
+  margin-top:60px;
+}
+
+.footer-content{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:40px;
+}
+
+.footer h2,.footer h3{margin-bottom:20px;}
+.footer p,.footer li{color:#ddd;margin-bottom:10px;}
+.footer ul{list-style:none;}
+

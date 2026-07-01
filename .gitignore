@@ -1,0 +1,17 @@
+# Dependencies
+backend/node_modules/
+
+# Environment — chứa mật khẩu, không push lên Git
+backend/.env
+
+# Upload files — ảnh người dùng upload (giữ ảnh mẫu trong uploads/hotels)
+backend/uploads/avatars/*
+!backend/uploads/avatars/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*

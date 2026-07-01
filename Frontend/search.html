@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Tìm kiếm khách sạn - VinhLong</title>
+
+  <link rel="stylesheet" href="css/search.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+
+<body>
+
+  <!-- =========================
+       HEADER
+  ========================== -->
+  <header class="header">
+
+    <div class="logo">
+      <div class="logo-icon">VL</div>
+      <h1>VinhLong</h1>
+    </div>
+
+    <nav class="navbar">
+      <a href="index.html">Trang chủ</a>
+      <a href="search.html">Tìm kiếm</a>
+      <a href="map.html">Bản đồ</a>
+      <a href="admin.html"   id="adminNav"   style="display:none;">Admin</a>
+      <a href="owner.html"   id="ownerNav"   style="display:none;">Quản lý KS</a>
+      <a href="profile.html" id="profileNav" style="display:none;">Tài khoản</a>
+      <a href="login.html"   id="loginNav">Đăng nhập</a>
+    </nav>
+
+  </header>
+  <script src="js/nav-sync.js"></script>
+
+
+
+  <!-- =========================
+       SEARCH BANNER
+  ========================== -->
+  <section class="search-banner">
+
+    <div class="overlay"></div>
+
+    <div class="banner-content">
+
+      <h1>
+        Tìm kiếm khách sạn
+      </h1>
+
+      <!--<p>
+        Tìm khách sạn phù hợp tại Vĩnh Long bằng GPS và Recommendation System
+      </p>-->
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =========================
+       SEARCH FILTER
+  ========================== -->
+  <section class="search-filter">
+
+    <div class="filter-box">
+
+      <!-- Input với autocomplete -->
+      <div class="search-input-wrap">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Nhập tên khách sạn hoặc địa điểm..."
+          autocomplete="off"
+        >
+        <!-- Dropdown gợi ý sẽ inject vào đây -->
+      </div>
+
+      <select id="priceSelect">
+        <option value="">Khoảng giá</option>
+        <option value="0-300000">Dưới 300.000đ</option>
+        <option value="300000-500000">300K - 500K</option>
+        <option value="500000-1000000">500K - 1 triệu</option>
+        <option value="1000000-99999999">Trên 1 triệu</option>
+      </select>
+
+      <select id="ratingSelect">
+        <option value="">Đánh giá</option>
+        <option value="4.5">⭐ 4.5 trở lên</option>
+        <option value="4">⭐ 4.0 trở lên</option>
+        <option value="3.5">⭐ 3.5 trở lên</option>
+        <option value="3">⭐ 3.0 trở lên</option>
+      </select>
+
+      <button id="gpsBtn">
+        📍 Gần tôi
+      </button>
+
+      <button class="search-btn" id="searchBtn">
+        Tìm kiếm
+      </button>
+
+    </div>
+
+  </section>
+
+  <!-- =========================
+       ĐỊA ĐIỂM DU LỊCH
+  ========================== -->
+  <section class="tourist-filter">
+    <div class="tourist-filter-inner">
+      <span class="tourist-label">🏝️ Tìm theo địa điểm:</span>
+      <div class="tourist-chips">
+        <button class="chip active" data-place="" data-lat="" data-lng="">Tất cả</button>
+        <button class="chip" data-place="Chợ nổi Trà Ôn"   data-lat="9.9822"  data-lng="106.0047">🛶 Chợ nổi Trà Ôn</button>
+        <button class="chip" data-place="Văn Thánh Miếu"   data-lat="10.2538" data-lng="105.9722">🏛️ Văn Thánh Miếu</button>
+        <button class="chip" data-place="Cù lao An Bình"   data-lat="10.2320" data-lng="105.9550">🌿 Cù lao An Bình</button>
+        <button class="chip" data-place="Trung tâm Vĩnh Long" data-lat="10.2552" data-lng="105.9731">🏙️ Trung tâm VL</button>
+        <button class="chip" data-place="Làng nổi Mang Thít" data-lat="10.2150" data-lng="106.0420">🏺 Làng nổi Mang Thít</button>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- =========================
+       RESULT TITLE
+  ========================== -->
+  <section class="hotel-result">
+
+    <div class="result-title">
+
+      <div>
+        <h2>
+          Kết quả tìm kiếm
+        </h2>
+
+        <p>
+          Gợi ý khách sạn dựa trên vị trí và đánh giá
+        </p>
+      </div>
+
+      <span>
+        48 khách sạn
+      </span>
+
+    </div>
+
+
+
+    <!-- =========================
+         HOTEL LIST
+    ========================== -->
+    <div class="hotel-grid">
+
+      <!-- HOTEL 1 -->
+      <div class="hotel-card">
+
+        <img
+          src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200&auto=format&fit=crop"
+          alt="Khách sạn"
+        >
+
+        <div class="hotel-info">
+
+          <div class="top-info">
+
+            <span class="badge">
+              Recommended
+            </span>
+
+            <span class="rating">
+              ⭐ 4.5
+            </span>
+
+          </div>
+
+          <h3>
+            Khách Sạn Sài Gòn Vĩnh Long
+          </h3>
+
+          <p>
+            📍 Phường 1, Vĩnh Long
+          </p>
+
+          <p>
+            🛏️ Wifi miễn phí - Hồ bơi - Nhà hàng
+          </p>
+
+          <div class="hotel-footer">
+
+            <span>
+              850.000đ/đêm
+            </span>
+
+            <a href="hotel-detail.html">
+              <button>
+                Chi tiết
+              </button>
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- HOTEL 2 -->
+      <div class="hotel-card">
+
+        <img
+          src="https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=1200&auto=format&fit=crop"
+          alt="Khách sạn"
+        >
+
+        <div class="hotel-info">
+
+          <div class="top-info">
+
+            <span class="badge">
+              Near You
+            </span>
+
+            <span class="rating">
+              ⭐ 4.4
+            </span>
+
+          </div>
+
+          <h3>
+            Ruby Hotel Vĩnh Long
+          </h3>
+
+          <p>
+            📍 Phường 3, Vĩnh Long
+          </p>
+
+          <p>
+            🛏️ Wifi - Máy lạnh - Bãi đỗ xe
+          </p>
+
+          <div class="hotel-footer">
+
+            <span>
+              550.000đ/đêm
+            </span>
+
+            <a href="hotel-detail.html">
+              <button>
+                Chi tiết
+              </button>
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- HOTEL 3 -->
+      <div class="hotel-card">
+
+        <img
+          src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=1200&auto=format&fit=crop"
+          alt="Khách sạn"
+        >
+
+        <div class="hotel-info">
+
+          <div class="top-info">
+
+            <span class="badge">
+              Popular
+            </span>
+
+            <span class="rating">
+              ⭐ 4.3
+            </span>
+
+          </div>
+
+          <h3>
+            Mekong Star Hotel
+          </h3>
+
+          <p>
+            📍 Phường 1, Vĩnh Long
+          </p>
+
+          <p>
+            🛏️ View đẹp - Gần trung tâm
+          </p>
+
+          <div class="hotel-footer">
+
+            <span>
+              280.000đ/đêm
+            </span>
+
+            <a href="hotel-detail.html">
+              <button>
+                Chi tiết
+              </button>
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- HOTEL 4 -->
+      <div class="hotel-card">
+
+        <img
+          src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200&auto=format&fit=crop"
+          alt="Khách sạn"
+        >
+
+        <div class="hotel-info">
+
+          <div class="top-info">
+
+            <span class="badge">
+              Budget
+            </span>
+
+            <span class="rating">
+              ⭐ 4.1
+            </span>
+
+          </div>
+
+          <h3>
+            Khách Sạn Nam Phương
+          </h3>
+
+          <p>
+            📍 Phường 1, Vĩnh Long
+          </p>
+
+          <p>
+            🛏️ Giá rẻ - Gần chợ trung tâm
+          </p>
+
+          <div class="hotel-footer">
+
+            <span>
+              320.000đ/đêm
+            </span>
+
+            <a href="hotel-detail.html">
+              <button>
+                Chi tiết
+              </button>
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =========================
+       ABOUT RECOMMENDATION
+  ========================== 
+  <section class="recommend-section">
+
+    <div class="recommend-content">
+
+      <div class="left">
+
+        <h2>
+          Recommendation System
+        </h2>
+
+        <p>
+          Hệ thống sử dụng thuật toán Hybrid Recommendation
+          để gợi ý khách sạn phù hợp dựa trên:
+        </p>
+
+        <ul>
+          <li>📍 Khoảng cách GPS</li>
+          <li>⭐ Đánh giá người dùng</li>
+          <li>💰 Khoảng giá</li>
+          <li>🏝️ Địa điểm du lịch gần đó</li>
+          <li>❤️ Hành vi tìm kiếm</li>
+        </ul>
+
+      </div>
+
+
+      <div class="right">
+
+        <img
+          src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1200&auto=format&fit=crop"
+          alt="Hotel"
+        >
+
+      </div>
+
+    </div>
+
+  </section>-->
+
+
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
+  <footer class="footer">
+
+    <div class="footer-content">
+
+      <div>
+        <h2>VinhLong Hotel</h2>
+
+        <p>
+          Hệ thống hỗ trợ tìm kiếm và gợi ý khách sạn
+          thông minh tại tỉnh Vĩnh Long.
+        </p>
+      </div>
+
+
+
+      <div>
+        <h3>Liên kết</h3>
+
+        <ul>
+          <li>Trang chủ</li>
+          <li>Tìm kiếm</li>
+          <li>Bản đồ</li>
+          <li>Đặt phòng</li>
+        </ul>
+      </div>
+
+
+
+      <div>
+        <h3>Liên hệ</h3>
+
+        <ul>
+          <li>Email: vinhlong@gmail.com</li>
+          <li>Hotline: 0123456789</li>
+          <li>Địa chỉ: Vĩnh Long</li>
+        </ul>
+      </div>
+
+    </div>
+
+  </footer>
+
+  <script type="module" src="js/search.js"></script>
+  <script type="module" src="js/nav-auth.js"></script>
+  <script src="js/nav-notify.js"></script>
+
+</body>
+</html>

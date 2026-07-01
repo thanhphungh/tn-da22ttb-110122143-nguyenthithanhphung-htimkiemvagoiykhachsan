@@ -1,0 +1,98 @@
+/* =========================
+   GLOBAL RESPONSIVE
+   Use alongside per-page CSS files.
+========================= */
+
+@media (max-width: 992px) {
+  .hotel-grid,
+  .hotel-list,
+  .feature-list,
+  .tour-list,
+  .footer-content,
+  .recommend-content,
+  .chatbot-section,
+  .map-section,
+  .profile-section,
+  .hotel-detail-grid,
+  .booking-card {
+    grid-template-columns: 1fr;
+  }
+
+  .hotel-grid,
+  .hotel-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .banner-content h1,
+  .hero-content h1,
+  .banner-content h1 {
+    font-size: 42px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .navbar {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  /* Search/filter */
+  .search-box,
+  .filter-box,
+  .map-top {
+    flex-direction: column;
+  }
+
+  /* Cards / sections that are 2-column */
+  .chatbot-section,
+  .map-section,
+  .profile-section,
+  .hotel-detail-grid,
+  .recommend-content,
+  .booking-layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* Lists */
+  .hotel-grid,
+  .hotel-list {
+    grid-template-columns: 1fr;
+  }
+
+  /* Footer */
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  /* Generic text scaling */
+  .section-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .banner-content h1,
+  .hero-content h1 {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-box button,
+  .filter-box button {
+    width: 100%;
+  }
+
+  .hotel-item img {
+    height: 160px;
+  }
+}
+

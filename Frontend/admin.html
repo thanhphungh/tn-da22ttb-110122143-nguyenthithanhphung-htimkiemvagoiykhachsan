@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - VinhLong Hotel</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">VL</div>
+      <h1>VinhLong Admin</h1>
+    </div>
+    <nav class="navbar">
+      <a href="index.html">Trang chủ</a>
+      <a href="search.html">Tìm kiếm</a>
+      <a href="map.html">Bản đồ</a>
+      <a href="profile.html">Tài khoản</a>
+      <a href="#" id="logoutBtn">Đăng xuất</a>
+    </nav>
+  </header>
+
+  <section class="admin-section">
+    <div class="container">
+
+      <!-- TAB MENU -->
+      <div class="admin-tabs">
+        <button class="tab-btn active" data-tab="stats">📊 Thống kê</button>
+        <button class="tab-btn" data-tab="hotels">🏨 Khách sạn</button>
+        <button class="tab-btn" data-tab="bookings">📋 Đặt phòng</button>
+        <button class="tab-btn" data-tab="users">👥 Người dùng</button>
+        <button class="tab-btn" data-tab="owners">🏢 Chủ KS</button>
+        <button class="tab-btn" data-tab="pending">⏳ Duyệt KS</button>
+        <button class="tab-btn" data-tab="activity">📈 Hoạt động</button>
+      </div>
+
+      <!-- STATS TAB -->
+      <div id="tab-stats" class="tab-content active">
+        <h2>Thống kê tổng quan</h2>
+        <div class="stats-grid">
+          <div class="stat-box">
+            <h3 id="statHotels">—</h3>
+            <p>Khách sạn</p>
+          </div>
+          <div class="stat-box">
+            <h3 id="statUsers">—</h3>
+            <p>Người dùng</p>
+          </div>
+          <div class="stat-box">
+            <h3 id="statBookings">—</h3>
+            <p>Đặt phòng</p>
+          </div>
+          <div class="stat-box">
+            <h3 id="statPending">—</h3>
+            <p>Chờ xác nhận</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- HOTELS TAB -->
+      <div id="tab-hotels" class="tab-content">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <h2>Quản lý khách sạn</h2>
+          <button id="addHotelBtn" class="btn-primary">+ Thêm khách sạn</button>
+        </div>
+
+        <!-- Form thêm/sửa khách sạn -->
+        <div id="hotelForm" style="display:none;background:#f8f9fa;border-radius:8px;padding:20px;margin-bottom:20px;">
+          <h3 id="hotelFormTitle">Thêm khách sạn</h3>
+          <form id="hotelFormEl" enctype="multipart/form-data">
+            <input type="hidden" id="hotelFormId">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div><label>Tên khách sạn *</label><input type="text" id="hName" required></div>
+              <div><label>Giá/đêm (VNĐ) *</label><input type="number" id="hPrice" required min="0"></div>
+              <div><label>Địa chỉ *</label><input type="text" id="hAddress" required></div>
+              <div><label>Phường/Xã</label><input type="text" id="hWard"></div>
+              <div><label>Quận/Huyện</label><input type="text" id="hDistrict"></div>
+              <div><label>Tỉnh/Thành</label><input type="text" id="hProvince" value="Vĩnh Long"></div>
+              <div><label>Vĩ độ (latitude) *</label><input type="number" id="hLat" step="any" required></div>
+              <div><label>Kinh độ (longitude) *</label><input type="number" id="hLng" step="any" required></div>
+              <div><label>Số sao</label><select id="hStar"><option value="1">1 ⭐</option><option value="2">2 ⭐</option><option value="3">3 ⭐</option><option value="4" selected>4 ⭐</option><option value="5">5 ⭐</option></select></div>
+              <div><label>Số điện thoại</label><input type="text" id="hPhone"></div>
+              <div><label>Email</label><input type="email" id="hEmail"></div>
+              <div><label>Trạng thái</label><select id="hStatus"><option value="active">Hoạt động</option><option value="inactive">Ngừng hoạt động</option></select></div>
+            </div>
+            <div style="margin-top:12px;">
+              <label>Mô tả</label>
+              <textarea id="hDesc" rows="3" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;box-sizing:border-box;"></textarea>
+            </div>
+            <div style="margin-top:12px;">
+              <label>Ảnh đại diện</label>
+              <input type="file" id="hImage" accept="image/*">
+            </div>
+            <div style="margin-top:16px;display:flex;gap:8px;">
+              <button type="submit" class="btn-primary">💾 Lưu</button>
+              <button type="button" id="cancelHotelForm" class="btn-secondary">Huỷ</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="hotelTableWrap" style="overflow-x:auto;"></div>
+      </div>
+
+      <!-- BOOKINGS TAB -->
+      <div id="tab-bookings" class="tab-content">
+        <h2>Quản lý đặt phòng</h2>
+        <div style="margin-bottom:12px;">
+          <select id="bookingStatusFilter">
+            <option value="">Tất cả trạng thái</option>
+            <option value="pending">Chờ xác nhận</option>
+            <option value="confirmed">Đã xác nhận</option>
+            <option value="cancelled">Đã huỷ</option>
+            <option value="completed">Hoàn thành</option>
+          </select>
+        </div>
+        <div id="bookingTableWrap" style="overflow-x:auto;"></div>
+      </div>
+
+      <!-- USERS TAB -->
+      <div id="tab-users" class="tab-content">
+        <h2>Quản lý người dùng</h2>
+        <div style="margin-bottom:12px;">
+          <input type="text" id="userSearch" placeholder="Tìm kiếm người dùng..." style="padding:8px 12px;border:1px solid #ddd;border-radius:6px;width:280px;">
+        </div>
+        <div id="userTableWrap" style="overflow-x:auto;"></div>
+      </div>
+
+      <!-- OWNERS TAB -->
+      <div id="tab-owners" class="tab-content">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <h2>Quản lý Chủ Khách Sạn</h2>
+        </div>
+        <div id="ownerTableWrap" style="overflow-x:auto;"></div>
+      </div>
+
+      <!-- PENDING HOTELS TAB -->
+      <div id="tab-pending" class="tab-content">
+        <h2 style="margin-bottom:6px;">Duyệt đăng ký Khách Sạn mới</h2>
+        <p style="color:#666;font-size:14px;margin-bottom:16px;">Các khách sạn đang chờ được Admin xác thực và kích hoạt.</p>
+        <div id="pendingTableWrap" style="overflow-x:auto;"></div>
+      </div>
+
+      <!-- ACTIVITY TAB -->
+      <div id="tab-activity" class="tab-content">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <h2>Lịch sử hoạt động</h2>
+          <select id="activityFilter" style="padding:8px;border:1px solid #ddd;border-radius:6px;">
+            <option value="">Tất cả hành động</option>
+            <option value="search">🔍 Tìm kiếm</option>
+            <option value="view_hotel">👁️ Xem KS</option>
+            <option value="add_favorite">❤️ Yêu thích</option>
+            <option value="book">📋 Đặt phòng</option>
+            <option value="rate">⭐ Đánh giá</option>
+            <option value="login">🔑 Đăng nhập</option>
+          </select>
+        </div>
+        <div id="activityTableWrap" style="overflow-x:auto;"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <script type="module">
+    const API_BASE = 'http://localhost:3000/api';
+
+    function getToken() { return localStorage.getItem('token'); }
+    function getUser()  { try { return JSON.parse(localStorage.getItem('user') || 'null'); } catch { return null; } }
+
+    function formatPrice(p) { return Number(p).toLocaleString('vi-VN'); }
+    function formatDate(d)  { return d ? new Date(d).toLocaleDateString('vi-VN') : '—'; }
+
+    const statusMap = { pending:'Chờ xác nhận', confirmed:'Đã xác nhận', cancelled:'Đã huỷ', completed:'Hoàn thành' };
+    const statusClass = { pending:'pending', confirmed:'success', cancelled:'cancelled', completed:'success' };
+
+    // ── Guard ─────────────────────────────────────────────────────────────────
+    const token = getToken();
+    const user  = getUser();
+    if (!token || !user || user.role !== 'admin') {
+      alert('Bạn không có quyền truy cập trang Admin.');
+      window.location.href = 'index.html';
+    }
+
+    // ─── Tabs ──────────────────────────────────────────────────────────────────
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+        if (btn.dataset.tab === 'hotels')   loadHotels();
+        if (btn.dataset.tab === 'bookings') loadBookings();
+        if (btn.dataset.tab === 'users')    loadUsers();
+        if (btn.dataset.tab === 'owners')   loadOwners();
+        if (btn.dataset.tab === 'pending')  loadPendingHotels();
+        if (btn.dataset.tab === 'activity') loadActivity();
+      });
+    });
+
+    // ── Logout ────────────────────────────────────────────────────────────────
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      localStorage.removeItem('token'); localStorage.removeItem('user');
+      window.location.href = 'index.html';
+    });
+
+    async function apiFetch(path, opts = {}) {
+      const res = await fetch(`${API_BASE}${path}`, {
+        ...opts,
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', ...(opts.headers || {}) }
+      });
+      if (!res.ok) { const d = await res.json(); throw new Error(d.message || 'Lỗi'); }
+      return res.json();
+    }
+
+    // ─── Stats ────────────────────────────────────────────────────────────────
+    async function loadStats() {
+      try {
+        const d = await apiFetch('/admin/stats');
+        const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        set('statHotels',   d.totalHotels);
+        set('statUsers',    d.totalUsers);
+        set('statBookings', d.totalBookings);
+        set('statPending',  d.pendingBookings);
+      } catch (e) { console.error(e); }
+    }
+
+    // ─── Hotels ───────────────────────────────────────────────────────────────
+    async function loadHotels() {
+      const wrap = document.getElementById('hotelTableWrap');
+      wrap.innerHTML = '<p>Đang tải...</p>';
+      try {
+        const d = await apiFetch('/admin/hotels?limit=100');
+        const hotels = d.hotels || [];
+        wrap.innerHTML = `
+          <table style="width:100%;border-collapse:collapse;">
+            <thead><tr style="background:#f0f0f0;">
+              <th style="padding:10px;text-align:left;">ID</th>
+              <th>Tên</th><th>Quận/Huyện</th><th>Giá</th><th>Đánh giá</th>
+              <th>Đặt phòng</th><th>Trạng thái</th><th>Hành động</th>
+            </tr></thead>
+            <tbody>
+            ${hotels.map(h => `
+              <tr style="border-bottom:1px solid #eee;">
+                <td style="padding:8px;">${h.id}</td>
+                <td style="max-width:180px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${h.name}</td>
+                <td>${h.district || '—'}</td>
+                <td>${formatPrice(h.price)}đ</td>
+                <td>⭐ ${parseFloat(h.rating||0).toFixed(1)}</td>
+                <td>${h.booking_count || 0}</td>
+                <td><span class="${h.status === 'active' ? 'success' : 'cancelled'}">${h.status === 'active' ? 'Hoạt động' : 'Ngừng'}</span></td>
+                <td>
+                  <button onclick="editHotel(${h.id})" style="background:#2196F3;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:12px;margin-right:4px;">Sửa</button>
+                  <button onclick="toggleHotelStatus(${h.id},'${h.status === 'active' ? 'inactive' : 'active'}')"
+                          style="background:${h.status === 'active' ? '#ff9800' : '#4CAF50'};color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:12px;margin-right:4px;">
+                    ${h.status === 'active' ? 'Tắt' : 'Bật'}
+                  </button>
+                  <button onclick="deleteHotel(${h.id})" style="background:#f44336;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:12px;">Xóa</button>
+                </td>
+              </tr>
+            `).join('')}
+            </tbody>
+          </table>
+          <p style="margin-top:8px;color:#666;font-size:13px;">Tổng: ${d.total} khách sạn</p>
+        `;
+      } catch (e) { wrap.innerHTML = `<p style="color:red;">${e.message}</p>`; }
+    }
+
+    // ─── Hotel form ───────────────────────────────────────────────────────────
+    document.getElementById('addHotelBtn').addEventListener('click', () => {
+      document.getElementById('hotelFormTitle').textContent = 'Thêm khách sạn';
+      document.getElementById('hotelFormId').value = '';
+      document.getElementById('hotelFormEl').reset();
+      document.getElementById('hotelForm').style.display = 'block';
+    });
+    document.getElementById('cancelHotelForm').addEventListener('click', () => {
+      document.getElementById('hotelForm').style.display = 'none';
+    });
+
+    window.editHotel = async function(id) {
+      try {
+        const d = await apiFetch(`/hotels/${id}`);
+        const h = d.hotel;
+        document.getElementById('hotelFormTitle').textContent = 'Sửa khách sạn';
+        document.getElementById('hotelFormId').value  = h.id;
+        document.getElementById('hName').value        = h.name || '';
+        document.getElementById('hPrice').value       = h.price || '';
+        document.getElementById('hAddress').value     = h.address || '';
+        document.getElementById('hWard').value        = h.ward || '';
+        document.getElementById('hDistrict').value    = h.district || '';
+        document.getElementById('hProvince').value    = h.province || 'Vĩnh Long';
+        document.getElementById('hLat').value         = h.latitude || '';
+        document.getElementById('hLng').value         = h.longitude || '';
+        document.getElementById('hStar').value        = h.star || 4;
+        document.getElementById('hPhone').value       = h.phone || '';
+        document.getElementById('hEmail').value       = h.email || '';
+        document.getElementById('hStatus').value      = h.status || 'active';
+        document.getElementById('hDesc').value        = h.description || '';
+        document.getElementById('hotelForm').style.display = 'block';
+        document.getElementById('hotelForm').scrollIntoView({ behavior: 'smooth' });
+      } catch (e) { alert(e.message); }
+    };
+
+    document.getElementById('hotelFormEl').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('hotelFormId').value;
+      const fd = new FormData();
+      fd.append('name',        document.getElementById('hName').value);
+      fd.append('price',       document.getElementById('hPrice').value);
+      fd.append('address',     document.getElementById('hAddress').value);
+      fd.append('ward',        document.getElementById('hWard').value);
+      fd.append('district',    document.getElementById('hDistrict').value);
+      fd.append('province',    document.getElementById('hProvince').value);
+      fd.append('latitude',    document.getElementById('hLat').value);
+      fd.append('longitude',   document.getElementById('hLng').value);
+      fd.append('star',        document.getElementById('hStar').value);
+      fd.append('phone',       document.getElementById('hPhone').value);
+      fd.append('email',       document.getElementById('hEmail').value);
+      fd.append('status',      document.getElementById('hStatus').value);
+      fd.append('description', document.getElementById('hDesc').value);
+      const img = document.getElementById('hImage').files[0];
+      if (img) fd.append('image', img);
+
+      try {
+        const res = await fetch(`${API_BASE}/hotels${id ? '/' + id : ''}`, {
+          method: id ? 'PUT' : 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: fd
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message);
+        alert(data.message);
+        document.getElementById('hotelForm').style.display = 'none';
+        loadHotels();
+        loadStats();
+      } catch (err) { alert(err.message); }
+    });
+
+    window.toggleHotelStatus = async function(id, status) {
+      try {
+        await apiFetch(`/admin/hotels/${id}/status`, { method:'PUT', body: JSON.stringify({ status }) });
+        loadHotels();
+      } catch (e) { alert(e.message); }
+    };
+
+    window.deleteHotel = async function(id) {
+      if (!confirm('Xác nhận xóa khách sạn này? Hành động không thể hoàn tác.')) return;
+      try {
+        await apiFetch(`/hotels/${id}`, { method: 'DELETE' });
+        loadHotels(); loadStats();
+      } catch (e) { alert(e.message); }
+    };
+
+    // ─── Bookings ─────────────────────────────────────────────────────────────
+    async function loadBookings(status = '') {
+      const wrap = document.getElementById('bookingTableWrap');
+      wrap.innerHTML = '<p>Đang tải...</p>';
+      try {
+        const q = status ? `?status=${status}&limit=100` : '?limit=100';
+        const d = await apiFetch(`/admin/bookings${q}`);
+        const bookings = d.bookings || [];
+        wrap.innerHTML = `
+          <table style="width:100%;border-collapse:collapse;">
+            <thead><tr style="background:#f0f0f0;">
+              <th style="padding:10px;text-align:left;">ID</th>
+              <th>Người dùng</th><th>Khách sạn</th>
+              <th>Check-in</th><th>Check-out</th>
+              <th>Tổng tiền</th><th>Trạng thái</th><th>Hành động</th>
+            </tr></thead>
+            <tbody>
+            ${bookings.map(b => `
+              <tr style="border-bottom:1px solid #eee;">
+                <td style="padding:8px;">#${b.id}</td>
+                <td>${b.user_name}<br><small style="color:#999;">${b.user_email}</small></td>
+                <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;">${b.hotel_name}</td>
+                <td>${formatDate(b.check_in)}</td>
+                <td>${formatDate(b.check_out)}</td>
+                <td>${formatPrice(b.total_price)}đ</td>
+                <td><span class="${statusClass[b.status] || ''}">${statusMap[b.status] || b.status}</span></td>
+                <td>
+                  <select onchange="updateBookingStatus(${b.id}, this.value)" style="padding:4px;border:1px solid #ddd;border-radius:4px;font-size:12px;">
+                    <option value="">Đổi trạng thái</option>
+                    <option value="pending">Chờ xác nhận</option>
+                    <option value="confirmed">Xác nhận</option>
+                    <option value="completed">Hoàn thành</option>
+                    <option value="cancelled">Huỷ</option>
+                  </select>
+                </td>
+              </tr>
+            `).join('')}
+            </tbody>
+          </table>
+          <p style="margin-top:8px;color:#666;font-size:13px;">Tổng: ${d.total} đặt phòng</p>
+        `;
+      } catch (e) { wrap.innerHTML = `<p style="color:red;">${e.message}</p>`; }
+    }
+
+    document.getElementById('bookingStatusFilter').addEventListener('change', function() {
+      loadBookings(this.value);
+    });
+
+    window.updateBookingStatus = async function(id, status) {
+      if (!status) return;
+      try {
+        await apiFetch(`/admin/bookings/${id}/status`, { method: 'PUT', body: JSON.stringify({ status }) });
+        loadBookings(document.getElementById('bookingStatusFilter').value);
+        loadStats();
+      } catch (e) { alert(e.message); }
+    };
+
+    // ─── Users ────────────────────────────────────────────────────────────────
+    async function loadUsers(keyword = '') {
+      const wrap = document.getElementById('userTableWrap');
+      wrap.innerHTML = '<p>Đang tải...</p>';
+      try {
+        const q = keyword ? `?keyword=${encodeURIComponent(keyword)}&limit=100` : '?limit=100';
+        const d = await apiFetch(`/admin/users${q}`);
+        const users = d.users || [];
+        wrap.innerHTML = `
+          <table style="width:100%;border-collapse:collapse;">
+            <thead><tr style="background:#f0f0f0;">
+              <th style="padding:10px;text-align:left;">ID</th>
+              <th>Họ và tên</th><th>Email</th><th>Điện thoại</th>
+              <th>Ngày tạo</th><th>Role</th><th>Hành động</th>
+            </tr></thead>
+            <tbody>
+            ${users.map(u => `
+              <tr style="border-bottom:1px solid #eee;">
+                <td style="padding:8px;">${u.id}</td>
+                <td>${u.full_name}</td>
+                <td>${u.email}</td>
+                <td>${u.phone || '—'}</td>
+                <td>${formatDate(u.created_at)}</td>
+                <td>
+                  <select onchange="updateUserRole(${u.id}, this.value)" style="padding:4px;border:1px solid #ddd;border-radius:4px;font-size:12px;">
+                    <option value="user"  ${u.role==='user'  ? 'selected':''}>User</option>
+                    <option value="admin" ${u.role==='admin' ? 'selected':''}>Admin</option>
+                  </select>
+                </td>
+                <td>
+                  <button onclick="deleteUser(${u.id})" style="background:#f44336;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:12px;">Xóa</button>
+                </td>
+              </tr>
+            `).join('')}
+            </tbody>
+          </table>
+          <p style="margin-top:8px;color:#666;font-size:13px;">Tổng: ${d.total} người dùng</p>
+        `;
+      } catch (e) { wrap.innerHTML = `<p style="color:red;">${e.message}</p>`; }
+    }
+
+    let userSearchTimer;
+    document.getElementById('userSearch').addEventListener('input', function() {
+      clearTimeout(userSearchTimer);
+      userSearchTimer = setTimeout(() => loadUsers(this.value.trim()), 400);
+    });
+
+    window.updateUserRole = async function(id, role) {
+      try {
+        await apiFetch(`/admin/users/${id}/role`, { method: 'PUT', body: JSON.stringify({ role }) });
+      } catch (e) { alert(e.message); }
+    };
+
+    window.deleteUser = async function(id) {
+      if (!confirm('Xóa người dùng này?')) return;
+      try {
+        await apiFetch(`/admin/users/${id}`, { method: 'DELETE' });
+        loadUsers(); loadStats();
+      } catch (e) { alert(e.message); }
+    };
+
+    // ─── Owners ───────────────────────────────────────────────────────────────
+    async function loadOwners() {
+      const wrap = document.getElementById('ownerTableWrap');
+      wrap.innerHTML = '<p>Đang tải...</p>';
+      try {
+        const d = await apiFetch('/admin/owners');
+        const owners = d.owners || [];
+        wrap.innerHTML = `
+          <table style="width:100%;border-collapse:collapse;">
+            <thead><tr style="background:#f0f0f0;">
+              <th style="padding:10px;text-align:left;">ID</th>
+              <th>Họ tên</th><th>Email</th><th>Doanh nghiệp</th>
+              <th>KS sở hữu</th><th>Xác thực</th><th>Hành động</th>
+            </tr></thead>
+            <tbody>
+            ${owners.map(o => `
+              <tr style="border-bottom:1px solid #eee;">
+                <td style="padding:8px;">${o.id}</td>
+                <td>${o.full_name}</td>
+                <td>${o.email}</td>
+                <td>${o.business_name || '—'}</td>
+                <td><strong>${o.hotel_count}</strong> khách sạn</td>
+                <td><span class="${o.is_verified ? 'success' : 'pending'}">${o.is_verified ? '✅ Đã xác thực' : '⏳ Chưa'}</span></td>
+                <td>
+                  <button onclick="viewOwnerHotels(${o.id},'${o.full_name}')"
+                    style="background:#2196F3;color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:12px;">
+                    Xem KS
+                  </button>
+                </td>
+              </tr>
+            `).join('')}
+            </tbody>
+          </table>
+          <p style="margin-top:8px;color:#666;font-size:13px;">Tổng: ${owners.length} chủ KS</p>
+        `;
+      } catch (e) { wrap.innerHTML = `<p style="color:red;">${e.message}</p>`; }
+    }
+
+    window.viewOwnerHotels = async function(ownerId, ownerName) {
+      try {
+        const d = await apiFetch('/admin/hotels?limit=100');
+        const hotels = (d.hotels || []);
+        const list = hotels.map(h => `${h.id}: ${h.name}`).join('\n');
+        const hotelIdStr = prompt(`Gán KS cho ${ownerName}\n\nDanh sách KS:\n${list}\n\nNhập Hotel ID để gán:`);
+        if (!hotelIdStr) return;
+        await apiFetch(`/admin/owners/${ownerId}/assign/${hotelIdStr.trim()}`, { method: 'POST' });
+        alert('✅ Đã gán khách sạn!');
+        loadOwners();
+      } catch(e) { alert(e.message); }
+    };
+
+    // ─── Pending Hotels (duyệt KS mới) ───────────────────────────────────────
+    async function loadPendingHotels() {
+      const wrap = document.getElementById('pendingTableWrap');
+      wrap.innerHTML = '<p>Đang tải...</p>';
+      try {
+        const d = await apiFetch('/owner/pending-hotels');
+        const hotels = d.hotels || [];
+        if (!hotels.length) {
+          wrap.innerHTML = '<div style="padding:30px;text-align:center;color:#666;"><p>🎉 Không có khách sạn nào chờ duyệt.</p></div>';
+          return;
+        }
+        wrap.innerHTML = `
+          <table style="width:100%;border-collapse:collapse;font-size:14px;">
+            <thead><tr style="background:#f0f0f0;">
+              <th style="padding:10px;text-align:left;">KS</th>
+              <th>Địa chỉ</th><th>Giá</th>
+              <th>Người đăng ký</th><th>Ngày đăng ký</th>
+              <th>Hành động</th>
+            </tr></thead>
+            <tbody>
+            ${hotels.map(h => `
+              <tr style="border-bottom:1px solid #eee;">
+                <td style="padding:10px;">
+                  <strong>${h.name}</strong><br>
+                  <small style="color:#888;">${h.description ? h.description.slice(0,60)+'...' : '—'}</small>
+                </td>
+                <td>${h.address||'—'}<br><small style="color:#888;">${h.district||''}</small></td>
+                <td>${formatPrice(h.price)}đ</td>
+                <td>
+                  ${h.requester_name||'—'}<br>
+                  <small style="color:#999;">${h.requester_email||''}</small><br>
+                  <small style="color:#999;">${h.requester_phone||''}</small>
+                </td>
+                <td>${formatDate(h.created_at)}</td>
+                <td style="white-space:nowrap;">
+                  <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+                    <input type="number" id="ownerIdFor${h.id}" placeholder="Owner ID"
+                      style="width:90px;padding:5px 8px;border:1px solid #ddd;border-radius:5px;font-size:12px;">
+                    <button onclick="approveHotel(${h.id})"
+                      style="background:#4CAF50;color:#fff;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;font-size:12px;">
+                      ✅ Duyệt
+                    </button>
+                    <button onclick="rejectHotel(${h.id})"
+                      style="background:#f44336;color:#fff;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;font-size:12px;">
+                      ❌ Từ chối
+                    </button>
+                    <a href="hotel-detail.html?id=${h.id}" target="_blank"
+                      style="background:#2196F3;color:#fff;padding:5px 10px;border-radius:5px;text-decoration:none;font-size:12px;">
+                      👁️ Xem
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+            </tbody>
+          </table>
+          <p style="margin-top:8px;color:#666;font-size:13px;">
+            * Nhập Owner ID (từ tab Người dùng) trước khi nhấn Duyệt. Bỏ trống để chỉ kích hoạt KS mà không gán chủ.
+          </p>`;
+      } catch(e) { wrap.innerHTML = `<p style="color:red;">${e.message}</p>`; }
+    }
+
+    window.approveHotel = async function(hotelId) {
+      const ownerIdInput = document.getElementById(`ownerIdFor${hotelId}`);
+      const ownerId = ownerIdInput?.value ? Number(ownerIdInput.value) : null;
+      if (!confirm(`Duyệt KS #${hotelId}${ownerId ? ` và gán cho Owner #${ownerId}` : ''}?`)) return;
+      try {
+        await apiFetch(`/owner/approve-hotel/${hotelId}`, {
+          method: 'POST', body: JSON.stringify({ owner_id: ownerId })
+        });
+        alert('✅ Đã duyệt khách sạn!');
+        loadPendingHotels();
+        loadStats();
+      } catch(e) { alert('❌ ' + e.message); }
+    };
+
+    window.rejectHotel = async function(hotelId) {
+      if (!confirm('Từ chối và XÓA khách sạn này?')) return;
+      try {
+        await apiFetch(`/owner/reject-hotel/${hotelId}`, { method: 'DELETE' });
+        alert('Đã từ chối.');
+        loadPendingHotels();
+      } catch(e) { alert('❌ ' + e.message); }
+    };
+
+    // ─── Activity ─────────────────────────────────────────────────────────────
+    async function loadActivity(action = '') {
+      const wrap = document.getElementById('activityTableWrap');
+      wrap.innerHTML = '<p>Đang tải...</p>';
+      try {
+        const q = action ? `?action=${action}&limit=100` : '?limit=100';
+        const d = await apiFetch(`/admin/activity${q}`);
+        const activities = d.activities || [];
+        const actLabels = { search:'🔍 Tìm kiếm', view_hotel:'👁️ Xem KS', add_favorite:'❤️ Yêu thích', remove_favorite:'💔 Bỏ thích', book:'📋 Đặt phòng', cancel_booking:'❌ Huỷ ĐP', rate:'⭐ Đánh giá', login:'🔑 Đăng nhập', register:'📝 Đăng ký' };
+        wrap.innerHTML = `
+          <table style="width:100%;border-collapse:collapse;">
+            <thead><tr style="background:#f0f0f0;">
+              <th style="padding:10px;text-align:left;">Thời gian</th>
+              <th>Người dùng</th><th>Hành động</th>
+              <th>Đối tượng</th><th>Chi tiết</th>
+            </tr></thead>
+            <tbody>
+            ${activities.map(a => {
+              let meta = {};
+              try { meta = JSON.parse(a.meta||'{}'); } catch {}
+              return `
+                <tr style="border-bottom:1px solid #eee;">
+                  <td style="padding:8px;font-size:12px;white-space:nowrap;">${formatDate(a.created_at)}</td>
+                  <td>${a.full_name || '—'}<br><small style="color:#999;">${a.email||''}</small></td>
+                  <td>${actLabels[a.action] || a.action}</td>
+                  <td>${a.entity_type ? `${a.entity_type} #${a.entity_id}` : '—'}</td>
+                  <td style="font-size:12px;color:#666;max-width:200px;overflow:hidden;text-overflow:ellipsis;">
+                    ${meta.keyword ? `"${meta.keyword}"` : meta.hotel_name || JSON.stringify(meta).slice(0,50)}
+                  </td>
+                </tr>`;
+            }).join('')}
+            </tbody>
+          </table>
+          <p style="margin-top:8px;color:#666;font-size:13px;">Tổng: ${d.total || activities.length} bản ghi</p>
+        `;
+      } catch (e) { wrap.innerHTML = `<p style="color:red;">${e.message}</p>`; }
+    }
+
+    document.getElementById('activityFilter')?.addEventListener('change', function() {
+      loadActivity(this.value);
+    });
+
+    // ─── Load ban đầu ─────────────────────────────────────────────────────────
+    loadStats();
+  </script>
+</body>
+</html>

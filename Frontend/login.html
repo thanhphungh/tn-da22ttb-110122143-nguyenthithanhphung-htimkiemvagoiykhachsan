@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Đăng nhập - VinhLong Hotel</title>
+
+  <link rel="stylesheet" href="css/login.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+
+<body>
+
+  <!-- =========================
+       HEADER
+  ========================== -->
+  <header class="header">
+
+    <div class="logo">
+      <div class="logo-icon">VL</div>
+      <h1>VinhLong</h1>
+    </div>
+
+    <nav class="navbar">
+      <a href="index.html">Trang chủ</a>
+      <a href="search.html">Tìm kiếm</a>
+      <a href="map.html">Bản đồ</a>
+      <a href="admin.html" id="adminNav" style="display:none;">Admin</a>
+      <a href="owner.html" id="ownerNav" style="display:none;">Quản lý KS</a>
+      <a href="profile.html" id="profileNav" style="display:none;">Tài khoản</a>
+      <a href="login.html" id="loginNav">Đăng nhập</a>
+    </nav>
+
+  </header>
+  <script src="js/nav-sync.js"></script>
+
+
+
+  <!-- =========================
+       LOGIN SECTION
+  ========================== -->
+  <section class="login-section">
+
+    <div class="login-container">
+
+      <!-- LEFT -->
+      <div class="login-left">
+
+        <div class="overlay"></div>
+
+        <div class="left-content">
+
+          <h1>
+            Chào mừng trở lại
+          </h1>
+
+          <p>
+            Đăng nhập để trải nghiệm hệ thống gợi ý khách sạn
+            thông minh tại Vĩnh Long.
+          </p>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- RIGHT -->
+      <div class="login-right">
+
+        <h2>
+          Đăng nhập
+        </h2>
+
+        <p class="subtitle">
+          Vui lòng đăng nhập để tiếp tục
+        </p>
+
+
+        <!-- FORM -->
+        <form>
+
+          <!-- EMAIL -->
+          <div class="input-box">
+
+            <label>Email</label>
+
+            <input
+              type="email"
+              placeholder="Nhập email"
+              required
+            >
+
+          </div>
+
+
+
+          <!-- PASSWORD -->
+          <div class="input-box">
+
+            <label>Mật khẩu</label>
+
+            <input
+              type="password"
+              placeholder="Nhập mật khẩu"
+              required
+            >
+
+          </div>
+
+
+
+          <!-- OPTIONS -->
+          <div class="form-options">
+
+            <label>
+              <input type="checkbox">
+              Ghi nhớ đăng nhập
+            </label>
+
+            <a href="forgot-password.html">
+              Quên mật khẩu?
+            </a>
+
+          </div>
+
+
+
+          <!-- BUTTON -->
+          <button type="submit" class="login-btn">
+            Đăng nhập
+          </button>
+
+        </form>
+
+
+
+        <!-- REGISTER -->
+        <div class="register-link">
+
+          Chưa có tài khoản?
+          <a href="register.html">
+            Đăng ký ngay
+          </a>
+
+        </div>
+
+        <!-- GOOGLE LOGIN -->
+        <div class="social-login">
+          <div class="divider"><span>hoặc</span></div>
+          <div id="googleLoginBtn" style="display:flex;justify-content:center;margin-top:4px;"></div>
+          <p id="googleLoginStatus" style="text-align:center;font-size:13px;color:#e44d26;margin-top:6px;display:none;"></p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
+  <footer class="footer">
+
+    <div class="footer-content">
+
+      <div>
+
+        <h2>VinhLong Hotel</h2>
+
+        <p>
+          Hệ thống hỗ trợ tìm kiếm và gợi ý khách sạn
+          thông minh tại tỉnh Vĩnh Long.
+        </p>
+
+      </div>
+
+
+
+      <div>
+
+        <h3>Liên kết</h3>
+
+        <ul>
+          <li>Trang chủ</li>
+          <li>Tìm kiếm</li>
+          <li>Bản đồ</li>
+          <li>Đặt phòng</li>
+        </ul>
+
+      </div>
+
+
+
+      <div>
+
+        <h3>Liên hệ</h3>
+
+        <ul>
+          <li>Email: vinhlong@gmail.com</li>
+          <li>Hotline: 0123456789</li>
+          <li>Địa chỉ: Vĩnh Long</li>
+        </ul>
+
+      </div>
+
+    </div>
+
+  </footer>
+
+  <script type="module" src="js/auth.js"></script>
+  <script src="js/nav-auth.js" type="module"></script>
+  <script src="js/nav-notify.js"></script>
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script>
+    const GOOGLE_CLIENT_ID = '484338366617-bpngstkefll0dsqrc1os4dmurk18o9nq.apps.googleusercontent.com';
+
+    window.addEventListener('load', () => {
+      if (typeof google === 'undefined' || !google.accounts) return;
+      google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleLogin,
+        auto_select: false
+      });
+      google.accounts.id.renderButton(
+        document.getElementById('googleLoginBtn'),
+        { theme: 'outline', size: 'large', text: 'signin_with', locale: 'vi', width: 320 }
+      );
+    });
+
+    async function handleGoogleLogin(response) {
+      const statusEl = document.getElementById('googleLoginStatus');
+      statusEl.style.display = 'block';
+      statusEl.style.color = '#666';
+      statusEl.textContent = '⏳ Đang xác thực...';
+      try {
+        const res = await fetch('http://localhost:3000/api/auth/google', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ credential: response.credential })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message);
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        sessionStorage.setItem('_justLoggedIn', '1');
+        sessionStorage.removeItem('_greeted');
+        statusEl.style.color = 'green';
+        statusEl.textContent = '✅ Đăng nhập thành công!';
+        const redirectUrl = localStorage.getItem('redirectAfterLogin')
+          || new URLSearchParams(window.location.search).get('redirect')
+          || 'index.html';
+        localStorage.removeItem('redirectAfterLogin');
+        setTimeout(() => window.location.href = redirectUrl, 800);
+      } catch (err) {
+        statusEl.style.color = '#e44d26';
+        statusEl.textContent = '❌ ' + (err.message || 'Đăng nhập Google thất bại.');
+      }
+    }
+  </script>
+
+</body>
+</html>

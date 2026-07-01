@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>VinhLong - Hệ thống gợi ý khách sạn</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <!-- =========================
+       HEADER
+  ========================== -->
+  <header class="header">
+
+    <div class="logo">
+      <div class="logo-icon">VL</div>
+      <h1>VinhLong</h1>
+    </div>
+
+    <nav class="navbar">
+      <a href="index.html">Trang chủ</a>
+      <a href="search.html">Tìm kiếm</a>
+      <a href="map.html">Bản đồ</a>
+      <a href="admin.html" id="adminNav" style="display:none;">Admin</a>
+      <a href="owner.html" id="ownerNav" style="display:none;">Quản lý KS</a>
+      <a href="profile.html" id="profileNav" style="display:none;">Tài khoản</a>
+      <a href="login.html" id="loginNav">Đăng nhập</a>
+    </nav>
+
+  </header>
+
+  <!-- Script đồng bộ: cập nhật nav ngay lập tức trước khi module JS chạy -->
+  <script>
+    (function() {
+      var token = localStorage.getItem('token');
+      var user  = null;
+      try { user = JSON.parse(localStorage.getItem('user') || 'null'); } catch(e) {}
+      var loginNav   = document.getElementById('loginNav');
+      var profileNav = document.getElementById('profileNav');
+      var adminNav   = document.getElementById('adminNav');
+      var ownerNav   = document.getElementById('ownerNav');
+      if (token && user) {
+        if (loginNav)   loginNav.style.display   = 'none';
+        if (profileNav) profileNav.style.display = '';
+        if (adminNav)   adminNav.style.display   = (user.role === 'admin') ? '' : 'none';
+        if (ownerNav)   ownerNav.style.display   = (['owner','admin'].indexOf(user.role) >= 0) ? '' : 'none';
+      } else {
+        if (loginNav)   loginNav.style.display   = '';
+        if (profileNav) profileNav.style.display = 'none';
+        if (adminNav)   adminNav.style.display   = 'none';
+        if (ownerNav)   ownerNav.style.display   = 'none';
+      }
+    })();
+  </script>
+
+
+  <!-- =========================
+       HERO SECTION
+  ========================== -->
+  <section class="hero">
+
+    <div class="overlay"></div>
+
+    <div class="hero-content">
+
+      <div class="tag">
+        Hệ thống gợi ý khách sạn  tại Vĩnh Long
+      </div>
+
+      <h1>
+        Tìm khách sạn phù hợp <br>
+        dành cho bạn
+      </h1>
+
+      <!--<p>
+        Website hỗ trợ tìm kiếm, gợi ý và đặt phòng khách sạn
+        bằng AI, GPS và Recommendation System.
+      </p>-->
+
+
+      <!-- SEARCH BOX -->
+      <div class="search-box">
+
+        <input
+          type="text"
+          placeholder="Tìm khách sạn, địa điểm du lịch..."
+        >
+
+        <!--<button id="locationBtn">
+          📍 Vị trí
+        </button>
+
+        <button class="voice-btn">
+          🎤
+        </button>-->
+
+        <button class="search-btn">
+          Tìm kiếm
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =========================
+       HOTEL RECOMMENDATION
+  ========================== -->
+  <section class="hotel-section" id="mainRecommendSection">
+
+    <div class="section-title">
+      <div>
+        <h2 id="recommendTitle">Khách sạn nổi bật</h2>
+        <p id="recommendSubtitle" style="color:#888;font-size:13px;">Đề xuất theo điểm đánh giá cao nhất</p>
+      </div>
+      <a href="search.html">Xem tất cả</a>
+    </div>
+
+    <!-- 3 cột mặc định, responsive -->
+    <div class="hotel-list" id="recommendedHotels">
+      <div class="hotel-card skeleton-card" style="opacity:0.3;pointer-events:none;">
+        <div style="height:180px;background:#eee;"></div>
+        <div class="hotel-info"><span class="badge">...</span><h3>Đang tải...</h3></div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- =========================
+       GỢI Ý CÁ NHÂN (chỉ hiện khi đăng nhập + có lịch sử)
+  ========================== -->
+  <section class="hotel-section" id="forYouSection" style="display:none;">
+
+    <div class="section-title">
+      <div>
+        <h2 id="forYouTitle">⭐ Khách sạn nổi bật</h2>
+        <p id="forYouSubtitle" style="color:#8b5e3c;font-size:13px;"></p>
+      </div>
+      <a href="search.html">Xem tất cả</a>
+    </div>
+
+    <div class="hotel-list" id="forYouHotels">
+      <p style="color:#999;padding:16px;">Đang tải...</p>
+    </div>
+
+  </section>
+
+
+
+  <!-- =========================
+       SMART FEATURES
+  ========================== -->
+  <!-- <section class="features">
+
+    <h2>
+      Trải nghiệm thông minh
+    </h2>
+
+    <div class="feature-list">-->
+
+
+      <!-- AI -->
+      <!--<div class="feature-card">
+
+        <div class="icon">
+          🤖
+        </div>
+
+        <h3>
+          AI Chatbot tư vấn
+        </h3>
+
+        <p>
+          AI hỗ trợ tư vấn khách sạn,
+          địa điểm du lịch và đặt phòng.
+        </p>
+
+      </div>-->
+
+
+
+      <!-- VOICE -->
+      <!--<div class="feature-card">
+
+        <div class="icon">
+          🎤
+        </div>
+
+        <h3>
+          Tìm kiếm bằng giọng nói
+        </h3>
+
+        <p>
+          Người dùng có thể tìm khách sạn
+          bằng giọng nói.
+        </p>
+
+      </div>-->
+
+
+
+      <!-- ACCESSIBILITY -->
+      <!--<div class="feature-card">
+
+        <div class="icon">
+          👁️
+        </div>
+
+        <h3>
+          Hỗ trợ người khuyết tật
+        </h3>
+
+        <p>
+          Hỗ trợ đọc màn hình,
+          phụ đề chatbot và điều khiển giọng nói.
+        </p>
+
+      </div>
+
+    </div>-->
+
+  </section>
+
+
+
+  <!-- =========================
+       TOURIST PLACES
+  ========================== -->
+  <section class="tour-section">
+
+    <div class="section-title">
+      <div>
+        <h2>Địa điểm du lịch nổi bật</h2>
+        <p>Nhấn để xem khách sạn gần địa điểm</p>
+      </div>
+    </div>
+
+    <div class="tour-list" id="tourList">
+
+      <div class="tour-card" onclick="showNearbyHotels('Chợ nổi Trà Ôn', 9.9822, 106.0047)" style="cursor:pointer;">
+        <img src="/uploads/travel/chonoitraon.jpg" alt="Chợ nổi Trà Ôn"
+             onerror="this.src='https://images.unsplash.com/photo-1553531384-cc64ac80f931?q=80&w=1200'">
+        <div style="padding:16px 20px;">
+          <h3>Chợ nổi Trà Ôn</h3>
+          <p style="font-size:13px;color:#888;margin-top:4px;">📍 Huyện Trà Ôn · 🏨 Xem KS gần đây</p>
+        </div>
+      </div>
+
+      <div class="tour-card" onclick="showNearbyHotels('Văn Thánh Miếu', 10.2538, 105.9722)" style="cursor:pointer;">
+        <img src="/uploads/travel/VanThanhMieu.jpg" alt="Văn Thánh Miếu"
+             onerror="this.src='https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?q=80&w=1200'">
+        <div style="padding:16px 20px;">
+          <h3>Văn Thánh Miếu</h3>
+          <p style="font-size:13px;color:#888;margin-top:4px;">📍 TP. Vĩnh Long · 🏨 Xem KS gần đây</p>
+        </div>
+      </div>
+
+      <div class="tour-card" onclick="showNearbyHotels('Cù lao An Bình', 10.2320, 105.9550)" style="cursor:pointer;">
+        <img src="/uploads/travel/Cu_Lao_An_Binh.jpg" alt="Cù lao An Bình"
+             onerror="this.src='https://images.unsplash.com/photo-1540288882400-df22e2e1c9bb?q=80&w=1200'">
+        <div style="padding:16px 20px;">
+          <h3>Cù lao An Bình</h3>
+          <p style="font-size:13px;color:#888;margin-top:4px;">📍 TP. Vĩnh Long · 🏨 Xem KS gần đây</p>
+        </div>
+      </div>
+
+      <div class="tour-card" onclick="showNearbyHotels('Làng gốm Mang Thít', 10.2150, 106.0420)" style="cursor:pointer;">
+        <img src="/uploads/travel/Vinhlong_Mangthit.jpg" alt="Làng gốm Mang Thít"
+             onerror="this.src='https://images.unsplash.com/photo-1569949381669-ecf31ae8e613?q=80&w=1200'">
+        <div style="padding:16px 20px;">
+          <h3>Làng gốm Mang Thít</h3>
+          <p style="font-size:13px;color:#888;margin-top:4px;">📍 Huyện Mang Thít · 🏨 Xem KS gần đây</p>
+        </div>
+      </div>
+
+      <div class="tour-card" onclick="showNearbyHotels('Nhà cổ Bình Thủy', 10.0850, 105.7520)" style="cursor:pointer;">
+        <img src="/uploads/travel/Nha_Co_Binh_Thuy.jpg" alt="Nhà cổ Bình Thủy"
+             onerror="this.src='https://images.unsplash.com/photo-1615813967515-e1838c1c5116?q=80&w=1200'">
+        <div style="padding:16px 20px;">
+          <h3>Nhà cổ Bình Thủy</h3>
+          <p style="font-size:13px;color:#888;margin-top:4px;">📍 Gần Vĩnh Long · 🏨 Xem KS gần đây</p>
+        </div>
+      </div>
+
+      <div class="tour-card" onclick="showNearbyHotels('Khu du lịch Vĩnh Sang', 10.2480, 105.9800)" style="cursor:pointer;">
+        <img src="/uploads/travel/Khu_Du_Lich_Vinh_Sang.jpg" alt="Khu du lịch Vĩnh Sang"
+             onerror="this.src='https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?q=80&w=1200'">
+        <div style="padding:16px 20px;">
+          <h3>Khu du lịch Vĩnh Sang</h3>
+          <p style="font-size:13px;color:#888;margin-top:4px;">📍 TP. Vĩnh Long · 🏨 Xem KS gần đây</p>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- Modal khách sạn gần địa điểm du lịch -->
+  <div id="nearbyModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:9999;justify-content:center;align-items:center;">
+    <div style="background:#fff;border-radius:16px;padding:28px;max-width:660px;width:92%;max-height:82vh;overflow-y:auto;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+      <button onclick="document.getElementById('nearbyModal').style.display='none'"
+        style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:24px;cursor:pointer;color:#aaa;line-height:1;">✕</button>
+      <h3 id="nearbyModalTitle" style="margin-bottom:6px;font-size:20px;padding-right:30px;"></h3>
+      <p id="nearbyModalSubtitle" style="font-size:13px;color:#888;margin-bottom:16px;"></p>
+      <div id="nearbyModalBody"></div>
+      <div style="margin-top:16px;text-align:center;">
+        <a id="nearbySearchLink" href="search.html" style="color:#2196F3;font-size:13px;">Xem tất cả khách sạn →</a>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
+  <footer class="footer">
+
+    <div class="footer-content">
+
+      <div>
+        <h2>StayViet</h2>
+
+        <p>
+          Hệ thống hỗ trợ tìm kiếm và gợi ý khách sạn
+          thông minh tại tỉnh Vĩnh Long.
+        </p>
+      </div>
+
+
+      <div>
+        <h3>Liên kết</h3>
+
+        <ul>
+          <li>Trang chủ</li>
+          <li>Tìm kiếm</li>
+          <li>Bản đồ</li>
+          <li>Đặt phòng</li>
+        </ul>
+      </div>
+
+
+      <div>
+        <h3>Liên hệ</h3>
+
+        <ul>
+          <li>Email: vinhlong@gmail.com</li>
+          <li>Hotline: 0123456789</li>
+          <li>Địa chỉ: Vĩnh Long</li>
+        </ul>
+      </div>
+
+    </div>
+
+  </footer>
+
+
+
+  <script src="js/script.js"></script>
+  <script type="module" src="js/nav-auth.js"></script>
+  <script src="js/nav-notify.js"></script>
+
+</body>
+</html>
