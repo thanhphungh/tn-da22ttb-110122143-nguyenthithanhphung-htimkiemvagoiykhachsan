@@ -211,7 +211,8 @@ async function searchHotels(params = {}) {
     if (params.district)  q.set('district',  params.district);
     q.set('limit', '60');
 
-    const useRecommend = params.lat && params.lng && !params.keyword && !params.ward && !params.district;
+    const useRecommend = params.lat && params.lng && !params.keyword && !params.ward && !params.district
+      && !params.minPrice && !params.maxPrice && !params.minRating;
     const url = useRecommend
       ? `${API_BASE}/recommendations?${q}`
       : `${API_BASE}/hotels/search?${q}`;
@@ -379,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ratingSelect?.addEventListener('change', () => triggerSearch());
 
   const GPS_SEARCH_RADIUS   = 10; // km — ban kinh GPS "Gan toi"
-  const PLACE_SEARCH_RADIUS =  5; // km — ban kinh dia diem du lich
+  const PLACE_SEARCH_RADIUS = 10; // km — ban kinh dia diem du lich
 
   document.querySelectorAll('.chip').forEach(chip => {
     chip.addEventListener('click', () => {
@@ -395,9 +396,8 @@ document.addEventListener('DOMContentLoaded', () => {
         triggerSearch();
       } else {
         currentPlace = { name, lat: parseFloat(lat), lng: parseFloat(lng), radius: PLACE_SEARCH_RADIUS };
-        input.value = '';
         closeDropdown();
-        triggerSearch('');
+        triggerSearch();
       }
     });
   });

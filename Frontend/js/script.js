@@ -52,6 +52,7 @@ function createHotelCardWithReason(hotel, index) {
 }
 
 const HOME_GPS_RADIUS_KM = 10; // km — ban kinh KS gan toi trang chu
+const PLACE_RADIUS_KM   = 10; // km — ban kinh KS gan dia danh du lich (tuy chinh tai day)
 
 async function tryGetGps() {
   if (!navigator.geolocation) return null;
@@ -151,14 +152,96 @@ async function loadTopRatedSection(gps) {
 function initHeroSearch() {
   const searchBtn   = document.querySelector('.search-btn');
   const searchInput = document.querySelector('.search-box input');
+  const searchBox   = document.querySelector('.search-box');
   if (!searchBtn || !searchInput) return;
 
   function doSearch() {
     const kw = searchInput.value.trim();
+    closeDropdown();
     window.location.href = kw ? `search.html?keyword=${encodeURIComponent(kw)}` : 'search.html';
   }
+
+  let dropdown = null;
+  let debounceTimer = null;
+
+  function closeDropdown() {
+    if (dropdown) { dropdown.remove(); dropdown = null; }
+  }
+
+  function renderDropdown(items) {
+    closeDropdown();
+    if (!items.length) return;
+
+    dropdown = document.createElement('div');
+    dropdown.style.cssText = `
+      position:absolute; top:100%; left:0; right:0; z-index:9999;
+      background:#fff; border-radius:0 0 12px 12px;
+      box-shadow:0 8px 24px rgba(0,0,0,0.15);
+      max-height:320px; overflow-y:auto;
+    `;
+
+    items.forEach(h => {
+      const item = document.createElement('div');
+      item.style.cssText = `
+        display:flex; align-items:center; gap:12px;
+        padding:10px 16px; cursor:pointer; border-bottom:1px solid #f5f5f5;
+        transition:background .15s;
+      `;
+      item.innerHTML = `
+        <img src="${h.image && !h.image.includes('default') ? (h.image.startsWith('http') ? h.image : 'http://localhost:3000' + h.image) : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=60'}"
+          style="width:44px;height:36px;object-fit:cover;border-radius:6px;flex-shrink:0;"
+          onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=60'">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14px;font-weight:600;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${h.name}</div>
+          <div style="font-size:12px;color:#888;">${h.district || 'Vĩnh Long'} &nbsp;·&nbsp; ${Number(h.price).toLocaleString('vi-VN')}đ/đêm &nbsp;·&nbsp; ⭐ ${parseFloat(h.rating||0).toFixed(1)}</div>
+        </div>
+      `;
+      item.addEventListener('mouseenter', () => item.style.background = '#fdf6f0');
+      item.addEventListener('mouseleave', () => item.style.background = '');
+      item.addEventListener('mousedown', e => {
+        e.preventDefault();
+        searchInput.value = h.name;
+        closeDropdown();
+        window.location.href = `hotel-detail.html?id=${h.id}`;
+      });
+      dropdown.appendChild(item);
+    });
+
+    const seeAll = document.createElement('div');
+    seeAll.style.cssText = 'padding:10px 16px;text-align:center;font-size:13px;color:#8b5e3c;cursor:pointer;font-weight:600;';
+    seeAll.textContent = 'Xem tất cả kết quả';
+    seeAll.addEventListener('mousedown', e => { e.preventDefault(); doSearch(); });
+    dropdown.appendChild(seeAll);
+
+    searchBox.style.position = 'relative';
+    searchBox.style.borderRadius = dropdown ? '12px 12px 0 0' : '12px';
+    searchBox.appendChild(dropdown);
+  }
+
+  searchInput.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    const kw = searchInput.value.trim();
+    if (!kw) { closeDropdown(); return; }
+
+    debounceTimer = setTimeout(async () => {
+      try {
+        const res  = await fetch(`${API_BASE}/hotels/autocomplete?q=${encodeURIComponent(kw)}&limit=6`);
+        const data = await res.json();
+        renderDropdown(data.suggestions || []);
+      } catch { closeDropdown(); }
+    }, 250);
+  });
+
+  searchInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') doSearch();
+    if (e.key === 'Escape') closeDropdown();
+  });
+
+  searchInput.addEventListener('blur', () => {
+    setTimeout(closeDropdown, 150);
+  });
+
   searchBtn.addEventListener('click', doSearch);
-  searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
 }
 
 async function updateNav() {
@@ -230,19 +313,21 @@ window.showNearbyHotels = async function(placeName, placeLat, placeLng) {
   if (link) link.href  = `search.html`;
 
   try {
-    const res  = await fetch(`${API_BASE}/recommendations?lat=${placeLat}&lng=${placeLng}&limit=8`);
+    const res  = await fetch(`${API_BASE}/recommendations?lat=${placeLat}&lng=${placeLng}&limit=8&radius=${PLACE_RADIUS_KM}`);
     const data = await res.json();
     const hotels = (data.hotels || []).map(h => ({
       ...h,
       distance: Math.round(haversine(placeLat, placeLng, h.latitude, h.longitude) * 10) / 10
-    })).sort((a, b) => a.distance - b.distance);
+    }))
+    .filter(h => h.distance <= PLACE_RADIUS_KM)
+    .sort((a, b) => a.distance - b.distance);
 
     if (hotels.length === 0) {
-      body.innerHTML = '<p style="color:#666;text-align:center;padding:20px;">Không tìm thấy khách sạn gần đây.</p>';
+      body.innerHTML = `<p style="color:#666;text-align:center;padding:20px;">Khong tim thay khach san trong pham vi ${PLACE_RADIUS_KM}km.</p>`;
       return;
     }
 
-    subtitle.textContent = `${hotels.length} khách sạn gần nhất`;
+    subtitle.textContent = `${hotels.length} khach san trong pham vi ${PLACE_RADIUS_KM}km`;
 
     body.innerHTML = hotels.map(h => `
       <div style="display:flex;gap:12px;border-bottom:1px solid #f0f0f0;padding:12px 0;align-items:center;">

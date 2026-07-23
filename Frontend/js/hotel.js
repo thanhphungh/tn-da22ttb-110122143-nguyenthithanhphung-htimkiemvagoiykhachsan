@@ -403,16 +403,16 @@ function injectRoomSelector(rooms, basePrice, hotelId, token) {
 
   const roomOptions = rooms.length > 0
     ? rooms.map((r, i) => {
-        const qty = Number(r.quantity) || 0;
+        const qty = Number(r.available_qty ?? r.quantity) || 0;
         return qty > 0
           ? `<option value="${r.id}" data-price="${r.price || basePrice}" data-max="${qty}">
-              ${r.room_name || 'Phòng tiêu chuẩn'} — ${formatPrice(r.price || basePrice)}đ/đêm (còn ${qty})
+              ${r.room_name || 'Phong tieu chuan'} — ${formatPrice(r.price || basePrice)}d/dem (con ${qty} phong)
              </option>`
           : `<option value="${r.id}" data-price="${r.price || basePrice}" data-max="0" disabled>
-              ${r.room_name || 'Phòng tiêu chuẩn'} — Hết phòng
+              ${r.room_name || 'Phong tieu chuan'} — Het phong
              </option>`;
       }).join('')
-    : `<option value="default" data-price="${basePrice}" data-max="99">Phòng tiêu chuẩn — ${formatPrice(basePrice)}đ/đêm</option>`;
+    : `<option value="default" data-price="${basePrice}" data-max="99">Phong tieu chuan — ${formatPrice(basePrice)}d/dem</option>`;
 
   panel.innerHTML = `
     <h4 style="margin:0 0 14px;font-size:15px;color:#3d2a1c;">🛏️ Chọn phòng</h4>

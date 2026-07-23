@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post('/', authenticate, async (req, res) => {
   try {
-    const { hotel_id, check_in, check_out, total_price, total_rooms } = req.body;
+    const { hotel_id, room_id, check_in, check_out, total_price, total_rooms } = req.body;
     const user_id = req.user.id;
 
     if (!hotel_id || !check_in || !check_out) {
@@ -22,44 +22,77 @@ router.post('/', authenticate, async (req, res) => {
       return res.status(404).json({ message: 'Khách sạn không tồn tại hoặc đã ngừng hoạt động.' });
     }
     const hotel = hotels[0];
+    const rooms = Number(total_rooms) || 1;
 
-    const [[{ totalAvailable }]] = await db.query(
-      "SELECT COALESCE(SUM(quantity), 0) AS totalAvailable FROM rooms WHERE hotel_id = ? AND status = 'available' AND quantity > 0",
-      [hotel_id]
-    );
-    const [[{ totalRoomTypes }]] = await db.query(
-      "SELECT COUNT(*) AS totalRoomTypes FROM rooms WHERE hotel_id = ?",
-      [hotel_id]
-    );
+    if (room_id) {
+      const [[room]] = await db.query(
+        "SELECT * FROM rooms WHERE id = ? AND hotel_id = ? AND status = 'available'",
+        [room_id, hotel_id]
+      );
+      if (!room) {
+        return res.status(400).json({ message: 'Loai phong khong ton tai hoac khong kha dung.' });
+      }
 
-    if (totalRoomTypes > 0 && totalAvailable <= 0) {
-      return res.status(400).json({
-        message: '😔 Hiện tại khách sạn không còn phòng trống. Vui lòng chọn khách sạn khác hoặc quay lại sau.',
-        available_rooms: 0
-      });
+      const [[{ bookedQty }]] = await db.query(
+        `SELECT COALESCE(SUM(b.total_rooms), 0) AS bookedQty
+         FROM bookings b
+         WHERE b.hotel_id = ? AND b.room_id = ?
+           AND b.status IN ('pending', 'confirmed')
+           AND b.check_in  < ? AND b.check_out > ?`,
+        [hotel_id, room_id, check_out, check_in]
+      );
+
+      const availableQty = room.quantity - Number(bookedQty);
+      if (availableQty < rooms) {
+        return res.status(400).json({
+          message: availableQty <= 0
+            ? `Loai phong "${room.room_name}" da het trong thoi gian nay. Vui long chon loai phong khac hoac ngay khac.`
+            : `Loai phong "${room.room_name}" chi con ${availableQty} phong trong thoi gian nay.`,
+          available_rooms: Math.max(0, availableQty)
+        });
+      }
+    } else {
+      const [[{ totalAvailable }]] = await db.query(
+        `SELECT COALESCE(SUM(
+           GREATEST(0, r.quantity - COALESCE((
+             SELECT SUM(b2.total_rooms) FROM bookings b2
+             WHERE b2.hotel_id = r.hotel_id AND b2.room_id = r.id
+               AND b2.status IN ('pending','confirmed')
+               AND b2.check_in < ? AND b2.check_out > ?
+           ), 0))
+         ), 0) AS totalAvailable
+         FROM rooms r WHERE r.hotel_id = ? AND r.status = 'available'`,
+        [check_out, check_in, hotel_id]
+      );
+
+      if (Number(totalAvailable) <= 0) {
+        return res.status(400).json({
+          message: 'Hien tai khach san khong con phong trong trong thoi gian ban chon. Vui long chon ngay khac.',
+          available_rooms: 0
+        });
+      }
     }
 
-    const rooms = total_rooms || 1;
     const checkIn  = new Date(check_in);
     const checkOut = new Date(check_out);
     const nights = Math.max(1, Math.round((checkOut - checkIn) / (1000 * 60 * 60 * 24)));
     const price = total_price || (hotel.price * rooms * nights);
 
     const [result] = await db.query(
-      `INSERT INTO bookings (user_id, hotel_id, check_in, check_out, total_price, total_rooms)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [user_id, hotel_id, check_in, check_out, price, rooms]
+      `INSERT INTO bookings (user_id, hotel_id, room_id, check_in, check_out, total_price, total_rooms)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [user_id, hotel_id, room_id || null, check_in, check_out, price, rooms]
     );
     const bookingId = result.insertId;
 
-    await notify(user_id, '📋 Đặt phòng thành công',
-      `Bạn đã đặt phòng tại ${hotel.name}. Check-in: ${check_in} — Check-out: ${check_out}. Mã đặt phòng: #${bookingId}.`
+    await notify(user_id, 'Dat phong thanh cong',
+      `Ban da dat phong tai ${hotel.name}. Check-in: ${check_in} - Check-out: ${check_out}. Ma dat phong: #${bookingId}.`
     );
-    await notifyHotelOwners(hotel_id, '🔔 Có đặt phòng mới',
-      `Khách hàng vừa đặt phòng tại ${hotel.name}. Check-in: ${check_in}. Mã #${bookingId}. Vui lòng xác nhận.`
+    await notifyHotelOwners(hotel_id, 'Co dat phong moi',
+      `Khach hang vua dat phong tai ${hotel.name}. Check-in: ${check_in}. Ma #${bookingId}. Vui long xac nhan.`
     );
-    await notifyAdmins('📋 Đặt phòng mới',
-      `Có đặt phòng mới #${bookingId} tại ${hotel.name}.`
+    await notifyAdmins('Dat phong moi',
+      `Co dat phong moi #${bookingId} tai ${hotel.name}.`
     );
 
     await logActivity({
@@ -71,10 +104,10 @@ router.post('/', authenticate, async (req, res) => {
       [user_id, hotel_id]
     ).catch(() => {});
 
-    res.status(201).json({ message: 'Đặt phòng thành công.', booking_id: bookingId, total_price: price, nights });
+    res.status(201).json({ message: 'Dat phong thanh cong.', booking_id: bookingId, total_price: price, nights });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Lỗi máy chủ.', error: err.message });
+    res.status(500).json({ message: 'Loi may chu.', error: err.message });
   }
 });
 

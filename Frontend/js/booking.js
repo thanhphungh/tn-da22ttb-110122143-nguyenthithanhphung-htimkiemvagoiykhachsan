@@ -71,16 +71,19 @@ async function submitBooking(hotelId) {
   const statusEl   = document.getElementById('status');
   const bookBtn    = document.getElementById('bookBtn');
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const roomId    = urlParams.get('room') ? Number(urlParams.get('room')) : null;
+
   if (!checkIn || !checkOut) {
-    statusEl.textContent = '❌ Vui lòng chọn ngày nhận và ngày trả phòng.';
+    statusEl.textContent = 'Vui lòng chọn ngày nhận và ngày trả phòng.';
     statusEl.style.color = 'red'; return;
   }
   if (new Date(checkOut) <= new Date(checkIn)) {
-    statusEl.textContent = '❌ Ngày trả phòng phải sau ngày nhận phòng.';
+    statusEl.textContent = 'Ngày trả phòng phải sau ngày nhận phòng.';
     statusEl.style.color = 'red'; return;
   }
 
-  bookBtn.disabled = true; bookBtn.textContent = '⏳ Đang xử lý...';
+  bookBtn.disabled = true; bookBtn.textContent = 'Đang xử lý...';
 
   try {
     const res = await fetch(`${API_BASE}/bookings`, {
@@ -88,6 +91,7 @@ async function submitBooking(hotelId) {
       headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${token}` },
       body: JSON.stringify({
         hotel_id:    Number(hotelId),
+        room_id:     roomId,
         check_in:    checkIn,
         check_out:   checkOut,
         total_price: totalPrice,
@@ -98,13 +102,13 @@ async function submitBooking(hotelId) {
     if (!res.ok) throw new Error(data.message);
 
     statusEl.style.color = 'green';
-    statusEl.textContent = `✅ Đặt phòng thành công! Mã #${data.booking_id}. Tổng: ${formatPrice(data.total_price)}đ`;
-    bookBtn.textContent = '✅ Đã đặt phòng';
+    statusEl.textContent = `Dat phong thanh cong! Ma #${data.booking_id}. Tong: ${formatPrice(data.total_price)}d`;
+    bookBtn.textContent = 'Da dat phong';
     setTimeout(() => { window.location.href = 'profile.html'; }, 2500);
   } catch (err) {
-    bookBtn.disabled = false; bookBtn.textContent = 'Xác nhận đặt phòng';
+    bookBtn.disabled = false; bookBtn.textContent = 'Xac nhan dat phong';
     statusEl.style.color = 'red';
-    statusEl.textContent = '❌ ' + (err.message || 'Đặt phòng thất bại.');
+    statusEl.textContent = err.message || 'Dat phong that bai.';
   }
 }
 

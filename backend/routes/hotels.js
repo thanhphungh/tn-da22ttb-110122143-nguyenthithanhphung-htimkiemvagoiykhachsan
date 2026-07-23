@@ -29,22 +29,40 @@ router.get('/search', async (req, res) => {
       const kw = `%${keyword}%`;
       params.push(kw, kw, kw, kw);
     }
-    if (minPrice) { sql += ' AND h.price >= ?'; params.push(Number(minPrice)); }
-    if (maxPrice) { sql += ' AND h.price <= ?'; params.push(Number(maxPrice)); }
-    if (minRating){ sql += ' AND h.rating >= ?'; params.push(Number(minRating)); }
-
-    if (district) { sql += ' AND (h.district = ? OR h.district LIKE ?)'; params.push(district, `%${district}%`); }
-
-    if (ward) { sql += ' AND (h.ward = ? OR h.ward LIKE ? OR h.address LIKE ?)'; params.push(ward, `%${ward}%`, `%${ward}%`); }
+    if (minPrice)  { sql += ' AND h.price >= ?'; params.push(Number(minPrice)); }
+    if (maxPrice)  { sql += ' AND h.price <= ?'; params.push(Number(maxPrice)); }
+    if (minRating) { sql += ' AND h.rating >= ?'; params.push(Number(minRating)); }
+    if (district)  { sql += ' AND (h.district = ? OR h.district LIKE ?)'; params.push(district, `%${district}%`); }
+    if (ward)      { sql += ' AND (h.ward = ? OR h.ward LIKE ? OR h.address LIKE ?)'; params.push(ward, `%${ward}%`, `%${ward}%`); }
 
     sql += ' GROUP BY h.id ORDER BY h.rating DESC, h.total_reviews DESC';
     sql += ' LIMIT ? OFFSET ?';
     params.push(Number(limit), Number(offset));
 
-    const [rows] = await db.query(sql, params);
+    let rows = (await db.query(sql, params))[0];
 
-    const searchArea = ward || district || keyword;
-    if (rows.length === 0 && searchArea) {
+    // Lọc theo GPS radius nếu có tọa độ
+    if (lat && lng) {
+      const userLat = parseFloat(lat);
+      const userLng = parseFloat(lng);
+      const maxDist = parseFloat(radius) || 10;
+
+      function haversine(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = (lat2-lat1)*Math.PI/180, dLon = (lon2-lon1)*Math.PI/180;
+        const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      }
+
+      rows = rows
+        .filter(h => h.latitude && h.longitude)
+        .map(h => ({ ...h, distance: Math.round(haversine(userLat, userLng, h.latitude, h.longitude) * 10) / 10 }))
+        .filter(h => h.distance <= maxDist)
+        .sort((a, b) => a.distance - b.distance);
+    }
+
+    if (rows.length === 0) {
+      const areaName = ward || district || keyword;
       return res.json({
         hotels: [],
         total: 0,
@@ -52,7 +70,11 @@ router.get('/search', async (req, res) => {
           ? `Không tìm thấy khách sạn tại ${ward}. Thử tìm khu vực lân cận?`
           : district
             ? `Không tìm thấy khách sạn tại ${district}.`
-            : `Không tìm thấy khách sạn phù hợp với "${keyword}".`
+            : areaName
+              ? `Không tìm thấy khách sạn phù hợp với "${areaName}".`
+              : lat && lng
+                ? `Không tìm thấy khách sạn trong bán kính ${radius || 10}km với bộ lọc hiện tại.`
+                : null
       });
     }
 
@@ -119,7 +141,25 @@ router.get('/:id', async (req, res) => {
     if (rows.length === 0) return res.status(404).json({ message: 'Khách sạn không tồn tại.' });
 
     const [images] = await db.query('SELECT image_url FROM hotel_images WHERE hotel_id = ?', [id]);
-    const [rooms] = await db.query("SELECT * FROM rooms WHERE hotel_id = ? AND status = 'available'", [id]);
+
+    const today = new Date().toISOString().split('T')[0];
+    const [rooms] = await db.query(
+      `SELECT r.*,
+        GREATEST(0,
+          r.quantity - COALESCE((
+            SELECT SUM(b.total_rooms)
+            FROM bookings b
+            WHERE b.hotel_id = r.hotel_id
+              AND b.room_id = r.id
+              AND b.status IN ('pending','confirmed')
+              AND b.check_in  < DATE_ADD(?, INTERVAL 30 DAY)
+              AND b.check_out > ?
+          ), 0)
+        ) AS available_qty
+       FROM rooms r
+       WHERE r.hotel_id = ? AND r.status = 'available'`,
+      [today, today, id]
+    );
     const [rawReviews] = await db.query(
       `SELECT r.*, u.full_name, u.avatar, u.google_avatar FROM ratings r
        JOIN users u ON u.id = r.user_id
